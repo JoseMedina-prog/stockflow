@@ -37,6 +37,14 @@ jobs:
       - name: Create SQLite Database
         run: touch database/database.sqlite
 
+      - name: Create required directories
+        run: |
+          mkdir -p bootstrap/cache
+          mkdir -p storage/framework/cache/data
+          mkdir -p storage/framework/sessions
+          mkdir -p storage/framework/views
+          chmod -R 777 bootstrap/cache storage
+
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
