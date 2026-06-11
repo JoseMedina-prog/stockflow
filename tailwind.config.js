@@ -9,6 +9,30 @@ export default {
         './resources/views/**/*.blade.php',
         './resources/js/**/*.{vue,js,ts,jsx,tsx}',
     ],
+    safelist: [
+        {
+            pattern:
+                /^(bg|text|ring|border|fill|stroke)-(teal|emerald|amber|rose|sky|violet|red|green|blue|yellow|orange|slate|zinc|gray|neutral|stone)-(50|100|200|300|400|500|600|700|800|900)(\/(5|10|15|20|25|30|40|50|60|70|75|80|90|95))?$/,
+        },
+        {
+            pattern:
+                /^(bg|text|ring|border|fill|stroke)-(teal|emerald|amber|rose|sky|violet)-(400|500|600|700)(\/|$)/,
+            variants: ['hover', 'dark', 'dark:hover'],
+        },
+        'animate-in',
+        'animate-out',
+        'fade-in-0',
+        'fade-out-0',
+        'zoom-in-95',
+        'zoom-out-95',
+        'slide-in-from-top-\[48%\]',
+        'slide-in-from-left-1/2',
+        'slide-out-to-top-\[48%\]',
+        'slide-out-to-left-1/2',
+        'duration-150',
+        'duration-200',
+        'ease-out',
+    ],
     theme: {
         container: {
             center: true,
