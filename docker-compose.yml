@@ -1,0 +1,28 @@
+services:
+  app:
+    build: .
+    container_name: stockflow_app
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8000:8000"   # php artisan serve
+      - "5173:5173"   # vite dev (hot reload)
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: stockflow_db
+    environment:
+      MYSQL_DATABASE: stockflow
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: stockflow
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3307:3306"   # 3307 afuera para no chocar con MySQL local
+    volumes:
+      - dbdata:/var/lib/mysql
+
+volumes:
+  dbdata:
