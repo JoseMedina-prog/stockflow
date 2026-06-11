@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import CommandPalette from '@/components/stockflow/CommandPalette.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import ThemeToggle from '@/components/stockflow/ThemeToggle.vue';
@@ -38,7 +37,7 @@ import {
     UserPlus,
     Users,
 } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, defineAsyncComponent } from 'vue';
 import AppLogo from './AppLogo.vue';
 
 interface NavItem {
@@ -81,7 +80,9 @@ const accountingItems = computed<NavItem[]>(() => [
     { title: 'Impuestos', href: '/taxes', icon: Percent, permission: 'taxes.view_any' },
 ].filter((i) => can(i.permission)));
 
-const { open: openCommandPalette } = useCommandPalette();
+const { open: openCommandPalette, isOpen: commandPaletteOpen } = useCommandPalette();
+
+const CommandPalette = defineAsyncComponent(() => import('@/components/stockflow/CommandPalette.vue'));
 </script>
 
 <template>
@@ -131,5 +132,5 @@ const { open: openCommandPalette } = useCommandPalette();
     </Sidebar>
     <slot />
 
-    <CommandPalette />
+    <CommandPalette v-if="commandPaletteOpen" />
 </template>

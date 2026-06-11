@@ -54,14 +54,12 @@ export default defineConfig(({ mode }) => ({
         minify: 'esbuild',
         rollupOptions: {
             output: {
-                manualChunks(id) {
-                    if (id.includes('node_modules')) {
-                        if (id.includes('radix-vue')) return 'vendor-radix';
-                        if (id.includes('lucide-vue-next')) return 'vendor-lucide';
-                        if (id.includes('@vueuse/core')) return 'vendor-vueuse';
-                        if (id.includes('@inertiajs/inertia') || id.includes('ziggy-js')) return 'vendor-inertia';
-                        if (id.includes('@vue/runtime') || id.includes('/vue/') || id.includes('node_modules/vue')) return 'vendor-vue';
-                    }
+                manualChunks: {
+                    'vendor-vue': ['vue', '@vue/runtime-core', '@vue/runtime-dom', '@vue/reactivity', '@vue/shared'],
+                    'vendor-inertia': ['@inertiajs/vue3', 'ziggy-js'],
+                    'vendor-radix': ['radix-vue'],
+                    'vendor-vueuse': ['@vueuse/core'],
+                    'vendor-lucide': ['lucide-vue-next'],
                 },
             },
         },
