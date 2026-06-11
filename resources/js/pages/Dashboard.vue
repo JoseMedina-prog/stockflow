@@ -25,84 +25,91 @@ import {
     Users,
 } from 'lucide-vue-next';
 
-const props = defineProps<{
-    stats: {
-        sales_today_total: number;
-        sales_today_count: number;
-        sales_month_total: number;
-        sales_month_count: number;
-        purchases_today_total: number;
-        purchases_today_count: number;
-        purchases_month_total: number;
-        total_products: number;
-        low_stock_count: number;
-        total_customers: number;
-        receivable_total: number;
-        receivable_count: number;
-        payable_total: number;
-        payable_count: number;
-    };
-    chart: Array<{ date: string; label: string; sales: number; purchases: number; cashflow: number }>;
-    recentSales: Array<{ id: number; sale_date: string; total: number; customer: string | null }>;
-    lowStockProducts: Array<{
-        id: number;
-        name: string;
-        sku: string;
-        stock: number;
-        min_stock: number;
-        category: string | null;
-    }>;
-    accountsReceivable: Array<{
-        id: number;
-        total: number;
-        paid_amount: number;
-        balance: number;
-        sale_date: string;
-        days_overdue: number;
-        customer: { id: number; name: string } | null;
-    }>;
-    accountsPayable: Array<{
-        id: number;
-        folio: string;
-        total: number;
-        paid_amount: number;
-        balance: number;
-        purchase_date: string;
-        days_overdue: number;
-        supplier: { id: number; name: string };
-    }>;
-    topCustomers: Array<{
-        id: number;
-        name: string;
-        total_spent: number;
-        sales_count: number;
-    }>;
-    topProducts: Array<{
-        id: number;
-        name: string;
-        sku: string;
-        total_quantity: number;
-        total_revenue: number;
-    }>;
-    myTasks: Array<{
-        id: number;
-        title: string;
-        due_date: string | null;
-        priority: string;
-        priority_label: string;
-        priority_badge: string;
-        status: string;
-        status_label: string;
-        status_badge: string;
-        is_overdue: boolean;
-        is_due_today: boolean;
-    }>;
-    myTasksSummary: {
-        open: number;
-        overdue: number;
-        today: number;
-    };
-}>();
+type RecentSale = { id: number; sale_date: string; total: number; customer: string | null };
+type LowStockProduct = {
+    id: number;
+    name: string;
+    sku: string;
+    stock: number;
+    min_stock: number;
+    category: string | null;
+};
+type AccountReceivable = {
+    id: number;
+    total: number;
+    paid_amount: number;
+    balance: number;
+    sale_date: string;
+    days_overdue: number;
+    customer: { id: number; name: string } | null;
+};
+type AccountPayable = {
+    id: number;
+    folio: string;
+    total: number;
+    paid_amount: number;
+    balance: number;
+    purchase_date: string;
+    days_overdue: number;
+    supplier: { id: number; name: string };
+};
+type TopCustomer = { id: number; name: string; total_spent: number; sales_count: number };
+type TopProduct = { id: number; name: string; sku: string; total_quantity: number; total_revenue: number };
+type ChartPoint = { date: string; label: string; sales: number; purchases: number; cashflow: number };
+type MyTask = {
+    id: number;
+    title: string;
+    due_date: string | null;
+    priority: string;
+    priority_label: string;
+    priority_badge: string;
+    status: string;
+    status_label: string;
+    status_badge: string;
+    is_overdue: boolean;
+    is_due_today: boolean;
+};
+
+const props = withDefaults(
+    defineProps<{
+        stats: {
+            sales_today_total: number;
+            sales_today_count: number;
+            sales_month_total: number;
+            sales_month_count: number;
+            purchases_today_total: number;
+            purchases_today_count: number;
+            purchases_month_total: number;
+            total_products: number;
+            low_stock_count: number;
+            total_customers: number;
+            receivable_total: number;
+            receivable_count: number;
+            payable_total: number;
+            payable_count: number;
+        };
+        chart?: ChartPoint[];
+        recentSales?: RecentSale[];
+        lowStockProducts?: LowStockProduct[];
+        accountsReceivable?: AccountReceivable[];
+        accountsPayable?: AccountPayable[];
+        topCustomers?: TopCustomer[];
+        topProducts?: TopProduct[];
+        myTasks?: MyTask[];
+        myTasksSummary?: { open: number; overdue: number; today: number };
+    }>(),
+    {
+        chart: () => [],
+        recentSales: () => [],
+        lowStockProducts: () => [],
+        accountsReceivable: () => [],
+        accountsPayable: () => [],
+        topCustomers: () => [],
+        topProducts: () => [],
+        myTasks: () => [],
+        myTasksSummary: () => ({ open: 0, overdue: 0, today: 0 }),
+    },
+);
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Tablero', href: '/dashboard' }];
 

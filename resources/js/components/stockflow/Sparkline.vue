@@ -3,12 +3,13 @@ import { computed } from 'vue';
 
 const props = withDefaults(
     defineProps<{
-        data: number[];
+        data?: number[];
         height?: number;
         strokeClass?: string;
         fillClass?: string;
     }>(),
     {
+        data: () => [] as number[],
         height: 40,
         strokeClass: 'stroke-teal-500 dark:stroke-teal-400',
         fillClass: 'fill-teal-500/15 dark:fill-teal-400/20',

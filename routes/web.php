@@ -21,37 +21,32 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaxController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return redirect()->route('dashboard');
-})->name('home');
+Route::get('/', fn () => redirect()->route('dashboard'))->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)
         ->middleware('permission:dashboard.view_any')
         ->name('dashboard');
 
-    Route::resource('categories', CategoryController::class)
-        ->except(['show'])
-        ->middleware('permission:categories.view_any');
-
-    Route::resource('products', ProductController::class)
-        ->except(['show'])
-        ->middleware('permission:products.view_any');
-
-    Route::resource('customers', CustomerController::class)
-        ->except(['show'])
-        ->middleware('permission:customers.view_any');
-
-    Route::get('customers/{customer}', [CustomerController::class, 'show'])
-        ->middleware('permission:customers.view_any')
-        ->name('customers.show');
-
-    Route::resource('suppliers', SupplierController::class)
-        ->except(['show'])
-        ->middleware('permission:suppliers.view_any');
+    $resourcesExceptShow = [
+        'categories'    => CategoryController::class,
+        'products'      => ProductController::class,
+        'customers'     => CustomerController::class,
+        'suppliers'     => SupplierController::class,
+        'leads'         => LeadController::class,
+        'opportunities' => OpportunityController::class,
+        'quotes'        => QuoteController::class,
+        'tasks'         => TaskController::class,
+        'taxes'         => TaxController::class,
+    ];
+    foreach ($resourcesExceptShow as $name => $controller) {
+        Route::resource($name, $controller)
+            ->except(['show'])
+            ->middleware('permission:'.$name.'.view_any');
+    }
 
     Route::resource('purchases', PurchaseController::class)
-        ->except(['show'])
+        ->except(['show', 'destroy'])
         ->middleware('permission:purchases.view_any');
 
     Route::post('purchases/{purchase}/receive', [PurchaseController::class, 'receive'])
@@ -61,10 +56,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('purchases/{purchase}/cancel', [PurchaseController::class, 'cancel'])
         ->middleware('permission:purchases.update')
         ->name('purchases.cancel');
-
-    Route::get('purchases/{purchase}', [PurchaseController::class, 'show'])
-        ->middleware('permission:purchases.view_any')
-        ->name('purchases.show');
 
     Route::resource('sales', SaleController::class)
         ->only(['index', 'create', 'store', 'show'])
@@ -111,14 +102,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('permission:payments.create')
         ->name('purchases.payments.store');
 
-    Route::resource('leads', LeadController::class)
-        ->except(['show'])
-        ->middleware('permission:leads.view_any');
-
-    Route::get('leads/{lead}', [LeadController::class, 'show'])
-        ->middleware('permission:leads.view_any')
-        ->name('leads.show');
-
     Route::post('leads/{lead}/convert', [LeadController::class, 'convert'])
         ->middleware('permission:leads.update')
         ->name('leads.convert');
@@ -127,25 +110,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('permission:leads.update')
         ->name('leads.mark-lost');
 
-    Route::resource('opportunities', OpportunityController::class)
-        ->except(['show'])
-        ->middleware('permission:opportunities.view_any');
-
-    Route::get('opportunities/{opportunity}', [OpportunityController::class, 'show'])
-        ->middleware('permission:opportunities.view_any')
-        ->name('opportunities.show');
-
     Route::post('opportunities/{opportunity}/advance', [OpportunityController::class, 'advance'])
         ->middleware('permission:opportunities.update')
         ->name('opportunities.advance');
-
-    Route::resource('quotes', QuoteController::class)
-        ->except(['show'])
-        ->middleware('permission:quotes.view_any');
-
-    Route::get('quotes/{quote}', [QuoteController::class, 'show'])
-        ->middleware('permission:quotes.view_any')
-        ->name('quotes.show');
 
     Route::post('quotes/{quote}/send', [QuoteController::class, 'send'])
         ->middleware('permission:quotes.update')
@@ -163,14 +130,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('permission:sales.create')
         ->name('quotes.convert');
 
-    Route::resource('tasks', TaskController::class)
-        ->except(['show'])
-        ->middleware('permission:tasks.view_any');
-
-    Route::get('tasks/{task}', [TaskController::class, 'show'])
-        ->middleware('permission:tasks.view_any')
-        ->name('tasks.show');
-
     Route::post('tasks/{task}/complete', [TaskController::class, 'complete'])
         ->middleware('permission:tasks.update')
         ->name('tasks.complete');
@@ -183,37 +142,36 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('permission:activities.update')
         ->name('activities.destroy');
 
-    Route::post('customers/{customer}/activities', [ActivityController::class, 'storeForCustomer'])
-        ->middleware('permission:activities.create')
-        ->name('customers.activities.store');
+    $activityTargets = [
+        'customers'     => 'storeForCustomer',
+        'leads'         => 'storeForLead',
+        'opportunities' => 'storeForOpportunity',
+        'sales'         => 'storeForSale',
+    ];
+    foreach ($activityTargets as $segment => $method) {
+        Route::post("{$segment}/{{$segment}}/activities", [ActivityController::class, $method])
+            ->middleware('permission:activities.create')
+            ->name("{$segment}.activities.store");
+    }
 
-    Route::post('leads/{lead}/activities', [ActivityController::class, 'storeForLead'])
-        ->middleware('permission:activities.create')
-        ->name('leads.activities.store');
-
-    Route::post('opportunities/{opportunity}/activities', [ActivityController::class, 'storeForOpportunity'])
-        ->middleware('permission:activities.create')
-        ->name('opportunities.activities.store');
-
-    Route::post('sales/{sale}/activities', [ActivityController::class, 'storeForSale'])
-        ->middleware('permission:activities.create')
-        ->name('sales.activities.store');
 
     Route::get('search', SearchController::class)->name('search');
 
-    Route::prefix('accounting')->group(function () {
+    Route::prefix('accounting')->middleware('permission:accounting.view_any')->group(function () {
         Route::get('/', [AccountingController::class, 'index'])->name('accounting.index');
-        Route::get('ledger', [AccountingController::class, 'ledger'])->name('accounting.ledger');
-        Route::get('trial-balance', [AccountingController::class, 'trialBalance'])->name('accounting.trial-balance');
-        Route::get('income-statement', [AccountingController::class, 'incomeStatement'])->name('accounting.income-statement');
-        Route::get('balance-sheet', [AccountingController::class, 'balanceSheet'])->name('accounting.balance-sheet');
-        Route::get('tax-report', [AccountingController::class, 'taxReport'])->name('accounting.tax-report');
-        Route::get('accounts', [AccountingController::class, 'accounts'])->name('accounting.accounts');
-    })->middleware('permission:accounting.view_any');
 
-    Route::resource('taxes', TaxController::class)
-        ->except(['show'])
-        ->middleware('permission:taxes.view_any');
+        $accountingRoutes = [
+            'ledger'           => 'ledger',
+            'trial-balance'    => 'trialBalance',
+            'income-statement' => 'incomeStatement',
+            'balance-sheet'    => 'balanceSheet',
+            'tax-report'       => 'taxReport',
+            'accounts'         => 'accounts',
+        ];
+        foreach ($accountingRoutes as $uri => $action) {
+            Route::get($uri, [AccountingController::class, $action])->name("accounting.{$uri}");
+        }
+    });
 });
 
 require __DIR__.'/settings.php';

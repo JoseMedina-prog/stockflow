@@ -25,9 +25,32 @@ export default defineConfig({
             '@': path.resolve(__dirname, './resources/js'),
         },
     },
+    server: {
+        host: 'localhost',
+        port: 5173,
+        hmr: {
+            host: 'localhost',
+        },
+    },
     css: {
         postcss: {
             plugins: [tailwindcss, autoprefixer],
+        },
+    },
+    build: {
+        target: 'es2020',
+        cssCodeSplit: true,
+        minify: 'esbuild',
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    'vendor-vue': ['vue', '@vue/runtime-core', '@vue/runtime-dom', '@vue/reactivity', '@vue/shared'],
+                    'vendor-inertia': ['@inertiajs/vue3', 'ziggy-js'],
+                    'vendor-radix': ['radix-vue'],
+                    'vendor-vueuse': ['@vueuse/core'],
+                    'vendor-lucide': ['lucide-vue-next'],
+                },
+            },
         },
     },
 });
