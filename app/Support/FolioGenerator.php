@@ -56,7 +56,7 @@ class FolioGenerator
             $lastNumber = (int) $query
                 ->where('folio', 'like', $prefix.'%')
                 ->lockForUpdate()
-                ->selectRaw('MAX(CAST(SUBSTR(folio, ?) AS INTEGER)) as max_num', [strlen($prefix) + 1])
+                ->selectRaw('MAX(CAST(SUBSTRING(folio, ?) AS SIGNED)) as max_num', [strlen($prefix) + 1])
                 ->value('max_num');
 
             $next = $lastNumber + 1;
