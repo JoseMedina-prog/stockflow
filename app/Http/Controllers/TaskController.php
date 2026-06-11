@@ -20,6 +20,10 @@ use Inertia\Response;
 
 class TaskController extends Controller
 {
+    public const CUSTOM_ACTIONS = [
+        ['complete', 'post', 'tasks/{task}/complete', 'tasks.update', 'tasks.complete'],
+    ];
+
     public function __construct(private readonly TaskCompletionService $completer) {}
 
     public function index(Request $request): Response
@@ -58,7 +62,7 @@ class TaskController extends Controller
         }
 
         $tasks = $query
-            ->orderByRaw("CASE WHEN due_date IS NULL THEN 1 ELSE 0 END ASC")
+            ->orderByRaw('CASE WHEN due_date IS NULL THEN 1 ELSE 0 END ASC')
             ->orderBy('due_date')
             ->orderByRaw("CASE priority WHEN 'urgent' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2 WHEN 'low' THEN 3 END")
             ->latest('created_at')

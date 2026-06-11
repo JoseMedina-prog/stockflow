@@ -87,7 +87,7 @@ const rejectForm = useForm({
 
 const handleApprove = () => {
     processing.value = true;
-    approveForm.post(route('sale-returns.approve', props.saleReturn.id), {
+    approveForm.post(route('returns.approve', props.saleReturn.id), {
         preserveScroll: true,
         onFinish: () => {
             processing.value = false;
@@ -98,7 +98,7 @@ const handleApprove = () => {
 
 const handleReject = () => {
     processing.value = true;
-    rejectForm.post(route('sale-returns.reject', props.saleReturn.id), {
+    rejectForm.post(route('returns.reject', props.saleReturn.id), {
         preserveScroll: true,
         onFinish: () => {
             processing.value = false;
@@ -120,7 +120,7 @@ const handleReject = () => {
                 >
                     <template #actions>
                         <Button variant="outline" as-child>
-                            <Link :href="route('sale-returns.index')">
+                            <Link :href="route('returns.index')">
                                 <ArrowLeft class="mr-1" />
                                 Volver
                             </Link>

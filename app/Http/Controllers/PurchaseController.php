@@ -8,14 +8,21 @@ use App\Http\Requests\Purchase\UpdatePurchaseRequest;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Supplier;
+use App\Models\Tax;
 use App\Services\PurchaseService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class PurchaseController extends Controller
 {
+    public const CUSTOM_ACTIONS = [
+        ['receive', 'post', 'purchases/{purchase}/receive', 'purchases.update', 'purchases.receive'],
+        ['cancel', 'post', 'purchases/{purchase}/cancel', 'purchases.update', 'purchases.cancel'],
+    ];
+
     public function __construct(private readonly PurchaseService $service) {}
 
     public function index(Request $request): Response
@@ -107,7 +114,7 @@ class PurchaseController extends Controller
             ->get(['id', 'name', 'tax_id'])
             ->map(fn (Supplier $s) => ['id' => $s->id, 'name' => $s->name, 'tax_id' => $s->tax_id]);
 
-        $taxes = \App\Models\Tax::active()->orderBy('code')
+        $taxes = Tax::active()->orderBy('code')
             ->get(['id', 'code', 'name', 'rate', 'type'])
             ->map(fn ($t) => [
                 'id' => $t->id,
@@ -131,7 +138,7 @@ class PurchaseController extends Controller
         $purchase = $this->service->create(
             supplier: $supplier,
             user: $request->user(),
-            purchaseDate: \Illuminate\Support\Carbon::parse($request->input('purchase_date')),
+            purchaseDate: Carbon::parse($request->input('purchase_date')),
             items: $request->input('items'),
             receiveImmediately: $request->boolean('receive_immediately', true),
             notes: $request->input('notes'),
@@ -251,7 +258,7 @@ class PurchaseController extends Controller
         $this->service->update(
             purchase: $purchase,
             supplier: $supplier,
-            purchaseDate: \Illuminate\Support\Carbon::parse($request->input('purchase_date')),
+            purchaseDate: Carbon::parse($request->input('purchase_date')),
             items: $request->input('items'),
             notes: $request->input('notes'),
         );
@@ -264,7 +271,7 @@ class PurchaseController extends Controller
     {
         if (! $purchase->status->canDelete()) {
             return to_route('purchases.show', $purchase)
-                ->with('error', "Solo se pueden eliminar compras en estado pendiente.");
+                ->with('error', 'Solo se pueden eliminar compras en estado pendiente.');
         }
 
         $folio = $purchase->folio;
@@ -291,7 +298,7 @@ class PurchaseController extends Controller
     {
         if (! $purchase->status->canCancel()) {
             return to_route('purchases.show', $purchase)
-                ->with('error', "La compra ya está cancelada.");
+                ->with('error', 'La compra ya está cancelada.');
         }
 
         $this->service->cancel($purchase, $request->user(), $request->input('notes'));

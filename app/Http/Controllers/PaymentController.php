@@ -16,6 +16,11 @@ use Inertia\Response;
 
 class PaymentController extends Controller
 {
+    public const CUSTOM_ACTIONS = [
+        ['storeForSale', 'post', 'sales/{sale}/payments', 'payments.create', 'sales.payments.store'],
+        ['storeForPurchase', 'post', 'purchases/{purchase}/payments', 'payments.create', 'purchases.payments.store'],
+    ];
+
     public function __construct(private readonly PaymentService $service) {}
 
     public function index(Request $request): Response

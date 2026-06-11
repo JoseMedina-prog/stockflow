@@ -171,7 +171,7 @@ class SearchController extends Controller
                 'status_label' => $r->status->label(),
                 'reason' => $r->reason,
                 'customer' => $r->customer?->name,
-                'href' => route('sale-returns.show', $r->id),
+                'href' => route('returns.show', $r->id),
             ]);
 
         $payments = Payment::query()
@@ -273,4 +273,3 @@ class SearchController extends Controller
         ]);
     }
 }
-

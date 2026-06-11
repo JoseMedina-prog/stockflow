@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\OpportunityStage;
 use App\Enums\QuoteStatus;
 use App\Enums\StockMovementType;
 use App\Exceptions\InsufficientStockException;
 use App\Http\Requests\Quote\StoreQuoteRequest;
 use App\Http\Requests\Quote\UpdateQuoteRequest;
+use App\Models\Customer;
+use App\Models\Opportunity;
 use App\Models\Product;
 use App\Models\Quote;
 use App\Models\QuoteItem;
@@ -23,6 +26,13 @@ use Inertia\Response;
 
 class QuoteController extends Controller
 {
+    public const CUSTOM_ACTIONS = [
+        ['send', 'post', 'quotes/{quote}/send', 'quotes.update', 'quotes.send'],
+        ['accept', 'post', 'quotes/{quote}/accept', 'quotes.update', 'quotes.accept'],
+        ['reject', 'post', 'quotes/{quote}/reject', 'quotes.update', 'quotes.reject'],
+        ['convert', 'post', 'quotes/{quote}/convert', 'sales.create', 'quotes.convert'],
+    ];
+
     public function index(Request $request): Response
     {
         $query = Quote::query()
@@ -103,9 +113,9 @@ class QuoteController extends Controller
     {
         return Inertia::render('Quotes/Create', [
             'products' => $this->productsList(),
-            'customers' => \App\Models\Customer::orderBy('name')->get(['id', 'name', 'email', 'phone'])
+            'customers' => Customer::orderBy('name')->get(['id', 'name', 'email', 'phone'])
                 ->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'email' => $c->email, 'phone' => $c->phone]),
-            'opportunity' => $request->integer('opportunity_id') ? \App\Models\Opportunity::with('customer:id,name,email,phone')->find($request->integer('opportunity_id'))?->toArray() : null,
+            'opportunity' => $request->integer('opportunity_id') ? Opportunity::with('customer:id,name,email,phone')->find($request->integer('opportunity_id'))?->toArray() : null,
             'defaults' => [
                 'customer_id' => $request->integer('customer_id'),
                 'opportunity_id' => $request->integer('opportunity_id'),
@@ -246,7 +256,7 @@ class QuoteController extends Controller
                 ])->toArray(),
             ],
             'products' => $this->productsList(),
-            'customers' => \App\Models\Customer::orderBy('name')->get(['id', 'name', 'email', 'phone'])
+            'customers' => Customer::orderBy('name')->get(['id', 'name', 'email', 'phone'])
                 ->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'email' => $c->email, 'phone' => $c->phone]),
         ]);
     }
@@ -354,7 +364,7 @@ class QuoteController extends Controller
             'rejected_at' => now(),
             'notes' => $quote->notes
                 ? $quote->notes."\n\nMotivo de rechazo: ".$request->input('reason')
-                : "Motivo de rechazo: ".$request->input('reason'),
+                : 'Motivo de rechazo: '.$request->input('reason'),
         ]);
 
         return to_route('quotes.show', $quote)
@@ -432,7 +442,7 @@ class QuoteController extends Controller
 
             if ($quote->opportunity_id) {
                 $quote->opportunity?->update([
-                    'stage' => \App\Enums\OpportunityStage::ClosedWon,
+                    'stage' => OpportunityStage::ClosedWon,
                     'closed_at' => now(),
                 ]);
             }

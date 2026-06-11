@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ActivityType;
 use App\Enums\LeadSource;
 use App\Enums\LeadStage;
 use App\Http\Requests\Lead\StoreLeadRequest;
@@ -16,6 +17,11 @@ use Inertia\Response;
 
 class LeadController extends Controller
 {
+    public const CUSTOM_ACTIONS = [
+        ['convert', 'post', 'leads/{lead}/convert', 'leads.update', 'leads.convert'],
+        ['markLost', 'post', 'leads/{lead}/mark-lost', 'leads.update', 'leads.mark-lost'],
+    ];
+
     public function __construct(private readonly LeadConversionService $converter) {}
 
     public function index(Request $request): Response
@@ -201,13 +207,13 @@ class LeadController extends Controller
             ],
             'timeline' => $timeline,
             'activity_types' => array_map(
-                fn (\App\Enums\ActivityType $t) => [
+                fn (ActivityType $t) => [
                     'value' => $t->value,
                     'label' => $t->label(),
                     'badge' => $t->badgeVariant(),
                     'has_duration' => $t->hasDuration(),
                 ],
-                \App\Enums\ActivityType::cases(),
+                ActivityType::cases(),
             ),
         ]);
     }
@@ -291,6 +297,6 @@ class LeadController extends Controller
         ]);
 
         return to_route('leads.show', $lead)
-            ->with('success', "Lead marcado como perdido.");
+            ->with('success', 'Lead marcado como perdido.');
     }
 }

@@ -7,7 +7,6 @@ use App\Models\Customer;
 use App\Models\Quote;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends Factory<Quote>
@@ -25,7 +24,7 @@ class QuoteFactory extends Factory
         $validUntil = (clone $quoteDate)->modify('+15 days');
 
         return [
-            'folio' => 'COT-'.str_pad((string) fake()->unique()->numberBetween(1, 999999)), 6, '0', STR_PAD_LEFT),
+            'folio' => 'COT-'.str_pad((string) fake()->unique()->numberBetween(1, 999999), 6, '0', STR_PAD_LEFT),
             'customer_id' => Customer::factory(),
             'user_id' => User::factory(),
             'quote_date' => $quoteDate,

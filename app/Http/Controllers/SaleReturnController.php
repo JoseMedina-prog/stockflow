@@ -17,6 +17,13 @@ use Inertia\Response;
 
 class SaleReturnController extends Controller
 {
+    public const CUSTOM_ACTIONS = [
+        ['create', 'get', 'sales/{sale}/returns/create', 'returns.create', 'sales.returns.create'],
+        ['store', 'post', 'sales/{sale}/returns', 'returns.create', 'sales.returns.store'],
+        ['approve', 'post', 'returns/{saleReturn}/approve', 'returns.update', 'returns.approve'],
+        ['reject', 'post', 'returns/{saleReturn}/reject', 'returns.update', 'returns.reject'],
+    ];
+
     public function __construct(private readonly ReturnService $service) {}
 
     public function index(Request $request): Response
@@ -135,7 +142,7 @@ class SaleReturnController extends Controller
             return back()->withErrors(['items' => $e->getMessage()])->withInput();
         }
 
-        return to_route('sale-returns.show', $saleReturn)
+        return to_route('returns.show', $saleReturn)
             ->with('success', "Devolución {$saleReturn->folio} creada como pendiente.");
     }
 
@@ -227,7 +234,7 @@ class SaleReturnController extends Controller
             ? "Devolución {$saleReturn->folio} aprobada. Stock actualizado y nota de crédito emitida."
             : "Devolución {$saleReturn->folio} aprobada. Stock actualizado.";
 
-        return to_route('sale-returns.show', $saleReturn)->with('success', $message);
+        return to_route('returns.show', $saleReturn)->with('success', $message);
     }
 
     public function reject(RejectSaleReturnRequest $request, SaleReturn $saleReturn): RedirectResponse
@@ -238,7 +245,7 @@ class SaleReturnController extends Controller
             rejectionReason: $request->input('rejection_reason'),
         );
 
-        return to_route('sale-returns.show', $saleReturn)
+        return to_route('returns.show', $saleReturn)
             ->with('success', "Devolución {$saleReturn->folio} rechazada.");
     }
 }

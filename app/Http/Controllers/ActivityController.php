@@ -9,13 +9,23 @@ use App\Models\Customer;
 use App\Models\Lead;
 use App\Models\Opportunity;
 use App\Models\Sale;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ActivityController extends Controller
 {
+    public const CUSTOM_ACTIONS = [
+        ['destroy', 'delete', 'activities/{activity}', 'activities.update', 'activities.destroy'],
+        ['storeForCustomer', 'post', 'customers/{customer}/activities', 'activities.create', 'customers.activities.store'],
+        ['storeForLead', 'post', 'leads/{lead}/activities', 'activities.create', 'leads.activities.store'],
+        ['storeForOpportunity', 'post', 'opportunities/{opportunity}/activities', 'activities.create', 'opportunities.activities.store'],
+        ['storeForSale', 'post', 'sales/{sale}/activities', 'activities.create', 'sales.activities.store'],
+    ];
+
     public function index(Request $request): Response
     {
         $query = Activity::query()
@@ -127,7 +137,7 @@ class ActivityController extends Controller
         Activity::create($data);
     }
 
-    private function redirectToSubject(?string $type, ?int $id): \Illuminate\Routing\Redirector
+    private function redirectToSubject(?string $type, ?int $id): Redirector
     {
         if (! $type || ! $id) {
             return redirect();

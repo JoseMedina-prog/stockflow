@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ActivityType;
 use App\Enums\OpportunityStage;
 use App\Http\Requests\Opportunity\AdvanceOpportunityRequest;
 use App\Http\Requests\Opportunity\StoreOpportunityRequest;
@@ -17,6 +18,10 @@ use Inertia\Response;
 
 class OpportunityController extends Controller
 {
+    public const CUSTOM_ACTIONS = [
+        ['advance', 'post', 'opportunities/{opportunity}/advance', 'opportunities.update', 'opportunities.advance'],
+    ];
+
     public function __construct(private readonly PipelineAdvanceService $advancer) {}
 
     public function index(Request $request): Response
@@ -216,13 +221,13 @@ class OpportunityController extends Controller
             ],
             'timeline' => $timeline,
             'activity_types' => array_map(
-                fn (\App\Enums\ActivityType $t) => [
+                fn (ActivityType $t) => [
                     'value' => $t->value,
                     'label' => $t->label(),
                     'badge' => $t->badgeVariant(),
                     'has_duration' => $t->hasDuration(),
                 ],
-                \App\Enums\ActivityType::cases(),
+                ActivityType::cases(),
             ),
         ]);
     }
@@ -300,7 +305,7 @@ class OpportunityController extends Controller
 
         $message = match (true) {
             $targetStage->isWon() => "¡Oportunidad ganada! {$opportunity->name} cerrada con éxito.",
-            $targetStage->isLost() => "Oportunidad marcada como perdida.",
+            $targetStage->isLost() => 'Oportunidad marcada como perdida.',
             default => "Oportunidad movida a «{$targetStage->label()}».",
         };
 

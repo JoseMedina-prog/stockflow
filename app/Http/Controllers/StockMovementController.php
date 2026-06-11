@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Enums\StockMovementType;
 use App\Models\Product;
+use App\Models\Purchase;
+use App\Models\SaleReturn;
 use App\Models\StockMovement;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -108,7 +110,7 @@ class StockMovementController extends Controller
         return match ($movement->reference_type) {
             'App\\Models\\Sale', 'sale' => $movement->reference_id ? route('sales.show', $movement->reference_id) : null,
             'App\\Models\\Purchase', 'purchase' => $movement->reference_id ? route('purchases.show', $movement->reference_id) : null,
-            'App\\Models\\SaleReturn' => $movement->reference_id ? route('sale-returns.show', $movement->reference_id) : null,
+            'App\\Models\\SaleReturn' => $movement->reference_id ? route('returns.show', $movement->reference_id) : null,
             default => null,
         };
     }
@@ -118,7 +120,7 @@ class StockMovementController extends Controller
         if (! $id) {
             return '#?';
         }
-        $folio = \App\Models\SaleReturn::find($id)?->folio;
+        $folio = SaleReturn::find($id)?->folio;
 
         return $folio ?? '#'.$id;
     }
@@ -128,7 +130,7 @@ class StockMovementController extends Controller
         if (! $id) {
             return '#?';
         }
-        $folio = \App\Models\Purchase::find($id)?->folio;
+        $folio = Purchase::find($id)?->folio;
 
         return $folio ?? '#'.$id;
     }

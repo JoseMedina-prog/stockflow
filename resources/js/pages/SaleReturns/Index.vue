@@ -73,7 +73,7 @@ const hasFilters = () => !!(props.filters.search || props.filters.status || prop
 
 const applyFilters = () => {
     router.get(
-        route('sale-returns.index'),
+        route('returns.index'),
         {
             search: searchInput.value || undefined,
             status: status.value || undefined,
@@ -85,7 +85,7 @@ const applyFilters = () => {
 };
 
 const clearFilters = () => {
-    router.get(route('sale-returns.index'), {}, { preserveScroll: true });
+    router.get(route('returns.index'), {}, { preserveScroll: true });
 };
 </script>
 
@@ -185,7 +185,7 @@ const clearFilters = () => {
                                 {{ formatCurrency(returnItem.total) }}
                             </TableCell>
                             <TableCell class="text-right">
-                                <Link :href="route('sale-returns.show', returnItem.id)" class="inline-flex size-8 items-center justify-center rounded-md hover:bg-accent">
+                                <Link :href="route('returns.show', returnItem.id)" class="inline-flex size-8 items-center justify-center rounded-md hover:bg-accent">
                                     <Eye class="size-4" />
                                 </Link>
                             </TableCell>
