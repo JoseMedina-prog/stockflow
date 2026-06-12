@@ -5,10 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Pagination } from '@/components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatCurrency, formatDateTime } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { formatCurrency, formatDateTime } from '@/composables/useFormat';
 import { Eye, Search, Undo2, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
@@ -94,29 +94,17 @@ const clearFilters = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Devoluciones"
-                description="Gestiona las devoluciones de productos a clientes."
-            />
+            <PageHeader title="Devoluciones" description="Gestiona las devoluciones de productos a clientes." />
 
             <div class="flex flex-wrap items-end gap-2">
                 <div class="relative min-w-[200px] flex-1">
                     <Search class="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-                    <Input
-                        v-model="searchInput"
-                        placeholder="Buscar por folio, cliente o motivo..."
-                        class="pl-9"
-                        @keyup.enter="applyFilters"
-                    />
+                    <Input v-model="searchInput" placeholder="Buscar por folio, cliente o motivo..." class="pl-9" @keyup.enter="applyFilters" />
                 </div>
 
                 <div class="flex flex-col gap-1">
                     <label class="text-xs text-muted-foreground">Estado</label>
-                    <select
-                        v-model="status"
-                        class="h-9 rounded-md border border-input bg-background px-2 text-sm"
-                        @change="applyFilters"
-                    >
+                    <select v-model="status" class="h-9 rounded-md border border-input bg-background px-2 text-sm" @change="applyFilters">
                         <option value="">Todos</option>
                         <option v-for="st in statuses" :key="st.value" :value="st.value">
                             {{ st.label }}
@@ -185,7 +173,10 @@ const clearFilters = () => {
                                 {{ formatCurrency(returnItem.total) }}
                             </TableCell>
                             <TableCell class="text-right">
-                                <Link :href="route('returns.show', returnItem.id)" class="inline-flex size-8 items-center justify-center rounded-md hover:bg-accent">
+                                <Link
+                                    :href="route('returns.show', returnItem.id)"
+                                    class="inline-flex size-8 items-center justify-center rounded-md hover:bg-accent"
+                                >
                                     <Eye class="size-4" />
                                 </Link>
                             </TableCell>
@@ -198,12 +189,7 @@ const clearFilters = () => {
                     title="Sin devoluciones todavía"
                     description="Las devoluciones creadas desde las ventas aparecerán aquí."
                 />
-                <EmptyState
-                    v-else
-                    :icon="Search"
-                    title="Sin resultados"
-                    description="No encontramos devoluciones con ese criterio."
-                />
+                <EmptyState v-else :icon="Search" title="Sin resultados" description="No encontramos devoluciones con ese criterio." />
             </div>
 
             <Pagination v-if="returns.data.length > 0" :links="returns.links" />

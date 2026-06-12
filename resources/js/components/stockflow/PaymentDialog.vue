@@ -2,8 +2,8 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useForm } from '@inertiajs/vue3';
 import { formatCurrency } from '@/composables/useFormat';
+import { useForm } from '@inertiajs/vue3';
 import { CreditCard, Loader2, X } from 'lucide-vue-next';
 import { computed } from 'vue';
 
@@ -51,22 +51,14 @@ const formattedBalance = computed(() => formatCurrency(props.balance));
 </script>
 
 <template>
-    <div
-        v-if="open"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-        @click.self="close"
-    >
+    <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="close">
         <div class="w-full max-w-md rounded-lg bg-card p-6 shadow-xl">
             <div class="mb-4 flex items-center justify-between">
                 <h2 class="flex items-center gap-2 text-lg font-semibold">
                     <CreditCard class="size-5" />
                     Registrar pago
                 </h2>
-                <button
-                    type="button"
-                    class="rounded-md p-1 text-muted-foreground hover:bg-accent"
-                    @click="close"
-                >
+                <button type="button" class="rounded-md p-1 text-muted-foreground hover:bg-accent" @click="close">
                     <X class="size-4" />
                 </button>
             </div>
@@ -83,38 +75,20 @@ const formattedBalance = computed(() => formatCurrency(props.balance));
             <form @submit.prevent="submit" class="space-y-4">
                 <div class="space-y-2">
                     <Label for="amount">Monto</Label>
-                    <Input
-                        id="amount"
-                        v-model="form.amount"
-                        type="number"
-                        step="0.01"
-                        min="0.01"
-                        :max="balance"
-                        required
-                    />
+                    <Input id="amount" v-model="form.amount" type="number" step="0.01" min="0.01" :max="balance" required />
                     <p v-if="form.errors.amount" class="text-sm text-destructive">{{ form.errors.amount }}</p>
                 </div>
 
                 <div class="space-y-2">
                     <Label for="method">Método de pago</Label>
-                    <select
-                        id="method"
-                        v-model="form.method"
-                        required
-                        class="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
-                    >
+                    <select id="method" v-model="form.method" required class="h-9 w-full rounded-md border border-input bg-background px-2 text-sm">
                         <option v-for="m in methods" :key="m.value" :value="m.value">{{ m.label }}</option>
                     </select>
                 </div>
 
                 <div class="space-y-2">
                     <Label for="paid_at">Fecha y hora</Label>
-                    <Input
-                        id="paid_at"
-                        v-model="form.paid_at"
-                        type="datetime-local"
-                        required
-                    />
+                    <Input id="paid_at" v-model="form.paid_at" type="datetime-local" required />
                 </div>
 
                 <div class="space-y-2">

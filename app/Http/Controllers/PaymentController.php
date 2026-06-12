@@ -91,8 +91,8 @@ class PaymentController extends Controller
             'total_amount' => (float) $totals->sum('total'),
             'total_count' => (int) $totals->sum('count'),
             'by_method' => $totals->map(fn ($row) => [
-                'method' => $row->method,
-                'method_label' => PaymentMethod::from($row->method)->label(),
+                'method' => $row->method instanceof PaymentMethod ? $row->method->value : $row->method,
+                'method_label' => PaymentMethod::from($row->method instanceof PaymentMethod ? $row->method->value : $row->method)->label(),
                 'count' => (int) $row->count,
                 'total' => (float) $row->total,
             ])->values()->all(),

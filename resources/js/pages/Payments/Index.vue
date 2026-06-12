@@ -5,10 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Pagination } from '@/components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatCurrency, formatDateTime } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { formatCurrency, formatDateTime } from '@/composables/useFormat';
 import { CreditCard, Search, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
@@ -100,10 +100,7 @@ const clearFilters = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Pagos"
-                description="Tesorería: pagos aplicados a ventas y compras, con totales por método."
-            />
+            <PageHeader title="Pagos" description="Tesorería: pagos aplicados a ventas y compras, con totales por método." />
 
             <div class="grid gap-3 sm:grid-cols-3">
                 <div class="rounded-xl border border-border/60 bg-card p-4">
@@ -111,11 +108,7 @@ const clearFilters = () => {
                     <p class="text-2xl font-semibold tabular-nums">{{ formatCurrency(summary.total_amount) }}</p>
                     <p class="text-xs text-muted-foreground">{{ summary.total_count }} pago(s)</p>
                 </div>
-                <div
-                    v-for="entry in summary.by_method"
-                    :key="entry.method"
-                    class="rounded-xl border border-border/60 bg-card p-4"
-                >
+                <div v-for="entry in summary.by_method" :key="entry.method" class="rounded-xl border border-border/60 bg-card p-4">
                     <p class="text-xs text-muted-foreground">{{ entry.method_label }}</p>
                     <p class="text-2xl font-semibold tabular-nums">{{ formatCurrency(entry.total) }}</p>
                     <p class="text-xs text-muted-foreground">{{ entry.count }} pago(s)</p>
@@ -125,12 +118,7 @@ const clearFilters = () => {
             <div class="flex flex-wrap items-end gap-2">
                 <div class="relative min-w-[200px] flex-1">
                     <Search class="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-                    <Input
-                        v-model="searchInput"
-                        placeholder="Buscar por folio, referencia o notas..."
-                        class="pl-9"
-                        @keyup.enter="applyFilters"
-                    />
+                    <Input v-model="searchInput" placeholder="Buscar por folio, referencia o notas..." class="pl-9" @keyup.enter="applyFilters" />
                 </div>
 
                 <div class="flex flex-col gap-1">
@@ -188,11 +176,7 @@ const clearFilters = () => {
                                 </Badge>
                             </TableCell>
                             <TableCell>
-                                <Link
-                                    v-if="payment.payable_href"
-                                    :href="payment.payable_href"
-                                    class="font-mono text-xs hover:underline"
-                                >
+                                <Link v-if="payment.payable_href" :href="payment.payable_href" class="font-mono text-xs hover:underline">
                                     {{ payment.payable_folio }}
                                 </Link>
                                 <span v-else class="font-mono text-xs text-muted-foreground">{{ payment.payable_folio }}</span>
@@ -217,12 +201,7 @@ const clearFilters = () => {
                     title="Sin pagos todavía"
                     description="Los pagos registrados en ventas o compras aparecerán aquí."
                 />
-                <EmptyState
-                    v-else
-                    :icon="Search"
-                    title="Sin resultados"
-                    description="No encontramos pagos con ese criterio."
-                />
+                <EmptyState v-else :icon="Search" title="Sin resultados" description="No encontramos pagos con ese criterio." />
             </div>
 
             <Pagination v-if="payments.data.length > 0" :links="payments.links" />

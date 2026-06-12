@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Pagination } from '@/components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatDateTime } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { formatDateTime } from '@/composables/useFormat';
 import { ArrowLeftRight, Search, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
@@ -81,14 +81,7 @@ watch(
     },
 );
 
-const hasFilters = () =>
-    !!(
-        props.filters.search ||
-        props.filters.product_id ||
-        props.filters.type ||
-        props.filters.from ||
-        props.filters.to
-    );
+const hasFilters = () => !!(props.filters.search || props.filters.product_id || props.filters.type || props.filters.from || props.filters.to);
 
 const applyFilters = () => {
     router.get(
@@ -114,29 +107,17 @@ const clearFilters = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Movimientos de inventario"
-                description="Historial de entradas, salidas y ajustes de stock por producto."
-            />
+            <PageHeader title="Movimientos de inventario" description="Historial de entradas, salidas y ajustes de stock por producto." />
 
             <div class="flex flex-wrap items-end gap-2">
                 <div class="relative min-w-[200px] flex-1">
                     <Search class="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-                    <Input
-                        v-model="searchInput"
-                        placeholder="Buscar por producto, SKU o razón..."
-                        class="pl-9"
-                        @keyup.enter="applyFilters"
-                    />
+                    <Input v-model="searchInput" placeholder="Buscar por producto, SKU o razón..." class="pl-9" @keyup.enter="applyFilters" />
                 </div>
 
                 <div class="flex flex-col gap-1">
                     <label class="text-xs text-muted-foreground">Producto</label>
-                    <select
-                        v-model="productId"
-                        class="h-9 rounded-md border border-input bg-background px-2 text-sm"
-                        @change="applyFilters"
-                    >
+                    <select v-model="productId" class="h-9 rounded-md border border-input bg-background px-2 text-sm" @change="applyFilters">
                         <option :value="null">Todos</option>
                         <option v-for="p in products" :key="p.id" :value="p.id">
                             {{ p.name }}
@@ -146,11 +127,7 @@ const clearFilters = () => {
 
                 <div class="flex flex-col gap-1">
                     <label class="text-xs text-muted-foreground">Tipo</label>
-                    <select
-                        v-model="type"
-                        class="h-9 rounded-md border border-input bg-background px-2 text-sm"
-                        @change="applyFilters"
-                    >
+                    <select v-model="type" class="h-9 rounded-md border border-input bg-background px-2 text-sm" @change="applyFilters">
                         <option value="">Todos</option>
                         <option v-for="t in types" :key="t.value" :value="t.value">
                             {{ t.label }}
@@ -215,11 +192,7 @@ const clearFilters = () => {
                                 {{ m.user?.name ?? '—' }}
                             </TableCell>
                             <TableCell>
-                                <Link
-                                    v-if="m.reference_href"
-                                    :href="m.reference_href"
-                                    class="text-xs text-primary hover:underline"
-                                >
+                                <Link v-if="m.reference_href" :href="m.reference_href" class="text-xs text-primary hover:underline">
                                     {{ m.reference_label }}
                                 </Link>
                                 <span v-else class="text-xs text-muted-foreground">Manual</span>
@@ -233,12 +206,7 @@ const clearFilters = () => {
                     title="Sin movimientos todavía"
                     description="Las ventas, compras y ajustes de stock aparecerán aquí."
                 />
-                <EmptyState
-                    v-else
-                    :icon="Search"
-                    title="Sin resultados"
-                    description="No encontramos movimientos con ese criterio."
-                />
+                <EmptyState v-else :icon="Search" title="Sin resultados" description="No encontramos movimientos con ese criterio." />
             </div>
 
             <Pagination v-if="movements.data.length > 0" :links="movements.links" />

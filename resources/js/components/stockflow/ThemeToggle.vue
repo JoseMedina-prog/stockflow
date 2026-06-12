@@ -26,7 +26,13 @@ const cycleTheme = () => {
         class="flex size-9 items-center justify-center rounded-md text-muted-foreground transition-all duration-200 hover:bg-accent hover:text-foreground active:scale-95"
         @click="cycleTheme"
     >
-        <Transition mode="out-in" enter-active-class="transition-all duration-200" enter-from-class="rotate-90 opacity-0" leave-active-class="transition-all duration-200" leave-to-class="-rotate-90 opacity-0">
+        <Transition
+            mode="out-in"
+            enter-active-class="transition-all duration-200"
+            enter-from-class="rotate-90 opacity-0"
+            leave-active-class="transition-all duration-200"
+            leave-to-class="-rotate-90 opacity-0"
+        >
             <Sun v-if="appearance === 'light'" class="size-4" />
             <Moon v-else-if="appearance === 'dark'" class="size-4" />
             <Monitor v-else class="size-4" />

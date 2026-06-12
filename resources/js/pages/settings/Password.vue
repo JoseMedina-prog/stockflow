@@ -63,7 +63,10 @@ const updatePassword = () => {
 
         <SettingsLayout>
             <div class="space-y-6">
-                <HeadingSmall title="Actualizar contraseña" description="Asegúrate de que tu cuenta utilice una contraseña larga y aleatoria para mantenerse segura" />
+                <HeadingSmall
+                    title="Actualizar contraseña"
+                    description="Asegúrate de que tu cuenta utilice una contraseña larga y aleatoria para mantenerse segura"
+                />
 
                 <form @submit.prevent="updatePassword" class="space-y-6">
                     <div class="grid gap-2">

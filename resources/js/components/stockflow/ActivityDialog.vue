@@ -54,19 +54,11 @@ const submit = () => {
 </script>
 
 <template>
-    <div
-        v-if="open"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-        @click.self="close"
-    >
+    <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="close">
         <div class="w-full max-w-md rounded-lg bg-card p-6 shadow-xl">
             <div class="mb-4 flex items-center justify-between">
                 <h2 class="text-lg font-semibold">Registrar actividad</h2>
-                <button
-                    type="button"
-                    class="rounded-md p-1 text-muted-foreground hover:bg-accent"
-                    @click="close"
-                >
+                <button type="button" class="rounded-md p-1 text-muted-foreground hover:bg-accent" @click="close">
                     <X class="size-4" />
                 </button>
             </div>
@@ -102,22 +94,11 @@ const submit = () => {
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div class="space-y-2">
                         <Label for="activity_occurred_at">Cuándo</Label>
-                        <Input
-                            id="activity_occurred_at"
-                            v-model="form.occurred_at"
-                            type="datetime-local"
-                            required
-                        />
+                        <Input id="activity_occurred_at" v-model="form.occurred_at" type="datetime-local" required />
                     </div>
                     <div v-if="showDuration" class="space-y-2">
                         <Label for="activity_duration">Duración (min)</Label>
-                        <Input
-                            id="activity_duration"
-                            v-model="form.duration_minutes"
-                            type="number"
-                            min="1"
-                            max="1440"
-                        />
+                        <Input id="activity_duration" v-model="form.duration_minutes" type="number" min="1" max="1440" />
                     </div>
                 </div>
 

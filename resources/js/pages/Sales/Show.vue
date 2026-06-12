@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AppLayout from '@/layouts/AppLayout.vue';
+import { formatCurrency, formatDateTime } from '@/composables/useFormat';
 import { usePermissions } from '@/composables/usePermissions';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { formatCurrency, formatDateTime } from '@/composables/useFormat';
-import { ArrowLeft, Check, CreditCard, Receipt, Undo2, X } from 'lucide-vue-next';
+import { ArrowLeft, CreditCard, Receipt, Undo2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 interface PaymentData {
@@ -189,10 +189,7 @@ const voidPayment = (paymentId: number) => {
                         <Separator class="my-2" />
                         <div class="flex justify-between text-base">
                             <span class="font-semibold">Saldo</span>
-                            <span
-                                class="font-semibold tabular-nums"
-                                :class="sale.balance > 0 ? 'text-destructive' : ''"
-                            >
+                            <span class="font-semibold tabular-nums" :class="sale.balance > 0 ? 'text-destructive' : ''">
                                 {{ formatCurrency(sale.balance) }}
                             </span>
                         </div>

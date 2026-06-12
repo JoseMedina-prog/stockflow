@@ -6,12 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import AppLayout from '@/layouts/AppLayout.vue';
+import { formatCurrency, formatDateTime } from '@/composables/useFormat';
 import { usePermissions } from '@/composables/usePermissions';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
-import { formatCurrency, formatDateTime } from '@/composables/useFormat';
-import { ArrowLeft, ArrowRight, Check, FileText, Pencil, Plus, Target, X } from 'lucide-vue-next';
+import { ArrowLeft, ArrowRight, Check, FileText, Pencil, Plus, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 interface NextStage {
@@ -122,10 +122,7 @@ const handleDeleteActivity = (id: number) => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
             <div class="flex flex-wrap items-start justify-between gap-2">
-                <PageHeader
-                    :title="opportunity.name"
-                    :description="`Creada el ${formatDateTime(opportunity.created_at)}.`"
-                >
+                <PageHeader :title="opportunity.name" :description="`Creada el ${formatDateTime(opportunity.created_at)}.`">
                     <template #actions>
                         <Button variant="outline" as-child>
                             <Link :href="route('opportunities.index')">
@@ -153,11 +150,17 @@ const handleDeleteActivity = (id: number) => {
                 </PageHeader>
             </div>
 
-            <div v-if="opportunity.is_won" class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-200">
+            <div
+                v-if="opportunity.is_won"
+                class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-200"
+            >
                 <p class="flex items-center gap-2 font-medium"><Check class="size-4" /> Oportunidad ganada</p>
                 <p class="mt-1 text-xs">Cerrada el {{ formatDateTime(opportunity.closed_at ?? undefined) }}.</p>
             </div>
-            <div v-else-if="opportunity.is_lost" class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-900 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-200">
+            <div
+                v-else-if="opportunity.is_lost"
+                class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-900 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-200"
+            >
                 <p class="flex items-center gap-2 font-medium"><X class="size-4" /> Oportunidad perdida</p>
                 <p v-if="opportunity.lost_reason" class="mt-1 text-xs">Motivo: {{ opportunity.lost_reason }}</p>
             </div>
@@ -169,7 +172,7 @@ const handleDeleteActivity = (id: number) => {
                         v-for="ns in opportunity.next_stages"
                         :key="ns.value"
                         size="sm"
-                        :variant="ns.value === 'closed_won' ? 'default' : (ns.value === 'closed_lost' ? 'outline' : 'secondary')"
+                        :variant="ns.value === 'closed_won' ? 'default' : ns.value === 'closed_lost' ? 'outline' : 'secondary'"
                         :class="ns.value === 'closed_lost' ? 'text-destructive' : ''"
                         @click="advanceOpen = ns.value"
                     >
@@ -246,19 +249,23 @@ const handleDeleteActivity = (id: number) => {
                             </div>
                         </div>
                         <Separator />
-                    <div>
-                        <p class="text-xs text-muted-foreground">Notas</p>
-                        <p v-if="opportunity.notes" class="mt-1 whitespace-pre-line text-sm">{{ opportunity.notes }}</p>
-                        <p v-else class="mt-1 text-sm text-muted-foreground">Sin notas.</p>
-                    </div>
-                </CardContent>
-            </Card>
+                        <div>
+                            <p class="text-xs text-muted-foreground">Notas</p>
+                            <p v-if="opportunity.notes" class="mt-1 whitespace-pre-line text-sm">{{ opportunity.notes }}</p>
+                            <p v-else class="mt-1 text-sm text-muted-foreground">Sin notas.</p>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
 
             <Timeline :items="timeline" :can-delete="can('activities.update')" @delete-activity="handleDeleteActivity" />
         </div>
 
-        <div v-if="advanceOpen === 'closed_lost'" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="advanceOpen = null">
+        <div
+            v-if="advanceOpen === 'closed_lost'"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            @click.self="advanceOpen = null"
+        >
             <div class="w-full max-w-md rounded-lg bg-card p-6 shadow-xl">
                 <h2 class="text-lg font-semibold">Marcar oportunidad como perdida</h2>
                 <p class="mt-1 text-sm text-muted-foreground">Indica el motivo para futuras referencias.</p>
@@ -277,9 +284,7 @@ const handleDeleteActivity = (id: number) => {
                     </div>
                     <div class="flex items-center justify-end gap-2">
                         <Button type="button" variant="outline" @click="advanceOpen = null">Cancelar</Button>
-                        <Button type="submit" variant="destructive" :disabled="processing">
-                            <X class="mr-1" /> Marcar perdida
-                        </Button>
+                        <Button type="submit" variant="destructive" :disabled="processing"> <X class="mr-1" /> Marcar perdida </Button>
                     </div>
                 </form>
             </div>
@@ -288,14 +293,12 @@ const handleDeleteActivity = (id: number) => {
         <div v-else-if="advanceOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="advanceOpen = null">
             <div class="w-full max-w-md rounded-lg bg-card p-6 shadow-xl">
                 <h2 class="text-lg font-semibold">Confirmar avance de etapa</h2>
-                <p class="mt-1 text-sm text-muted-foreground">
-                    La oportunidad pasará a la etapa seleccionada.
-                </p>
+                <p class="mt-1 text-sm text-muted-foreground">La oportunidad pasará a la etapa seleccionada.</p>
                 <form @submit.prevent="handleAdvance" class="mt-4 space-y-4">
                     <div class="space-y-2">
                         <Label>Nueva etapa</Label>
                         <div class="rounded-md border border-border/60 bg-muted/40 px-3 py-2 text-sm font-medium">
-                            {{ opportunity.next_stages.find(s => s.value === advanceOpen)?.label }}
+                            {{ opportunity.next_stages.find((s) => s.value === advanceOpen)?.label }}
                         </div>
                     </div>
                     <div v-if="advanceOpen !== 'closed_won' && advanceOpen !== 'closed_lost'" class="space-y-2">
@@ -304,9 +307,7 @@ const handleDeleteActivity = (id: number) => {
                     </div>
                     <div class="flex items-center justify-end gap-2">
                         <Button type="button" variant="outline" @click="advanceOpen = null">Cancelar</Button>
-                        <Button type="submit" :disabled="processing">
-                            <ArrowRight class="mr-1" /> Avanzar
-                        </Button>
+                        <Button type="submit" :disabled="processing"> <ArrowRight class="mr-1" /> Avanzar </Button>
                     </div>
                 </form>
             </div>

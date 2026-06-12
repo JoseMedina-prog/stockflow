@@ -7,8 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency, formatDate } from '@/composables/useFormat';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { BookOpen, CircleDollarSign, ClipboardList, FileSpreadsheet, Landmark, Scale, Wallet } from 'lucide-vue-next';
@@ -66,10 +66,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Contabilidad"
-                description="Resumen contable del periodo, catálogo de cuentas e impuestos."
-            >
+            <PageHeader title="Contabilidad" description="Resumen contable del periodo, catálogo de cuentas e impuestos.">
                 <template #actions>
                     <Button variant="outline" as-child>
                         <Link :href="route('accounting.ledger')">
@@ -99,21 +96,11 @@ const breadcrumbs: BreadcrumbItem[] = [
             </PageHeader>
 
             <div class="flex flex-wrap items-end gap-2">
-                <DateRangePicker
-                    :from="period.from"
-                    :to="period.to"
-                    route-name="accounting.index"
-                />
+                <DateRangePicker :from="period.from" :to="period.to" route-name="accounting.index" />
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <StatCard
-                    title="Activos"
-                    :value="formatCurrency(summary.assets)"
-                    description="Cuentas de activo"
-                    :icon="Wallet"
-                    accent="info"
-                />
+                <StatCard title="Activos" :value="formatCurrency(summary.assets)" description="Cuentas de activo" :icon="Wallet" accent="info" />
                 <StatCard
                     title="Pasivos"
                     :value="formatCurrency(summary.liabilities)"
@@ -217,8 +204,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                     <p class="truncate font-medium">{{ e.concept }}</p>
                                     <p class="text-xs text-muted-foreground">
                                         <span class="font-mono">{{ e.folio }}</span>
-                                        · {{ formatDate(e.entry_date) }}
-                                        · {{ e.lines_count }} línea(s)
+                                        · {{ formatDate(e.entry_date) }} · {{ e.lines_count }} línea(s)
                                     </p>
                                 </div>
                                 <div class="text-right">

@@ -20,7 +20,10 @@ const submit = () => {
     <AuthLayout title="Verifica tu correo" description="Hemos enviado un enlace de verificación a tu correo. Revisa tu bandeja de entrada.">
         <Head title="Verificar correo" />
 
-        <div v-if="status === 'verification-link-sent'" class="mb-4 rounded-md border border-emerald-500/50 bg-emerald-500/10 px-3 py-2 text-center text-sm font-medium text-emerald-700 dark:text-emerald-300">
+        <div
+            v-if="status === 'verification-link-sent'"
+            class="mb-4 rounded-md border border-emerald-500/50 bg-emerald-500/10 px-3 py-2 text-center text-sm font-medium text-emerald-700 dark:text-emerald-300"
+        >
             Se ha enviado un nuevo enlace de verificación al correo que registraste.
         </div>
 

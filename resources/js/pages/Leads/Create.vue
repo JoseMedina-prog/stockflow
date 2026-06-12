@@ -7,9 +7,18 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Loader2 } from 'lucide-vue-next';
 
-interface UserOption { id: number; name: string; }
-interface SourceOption { value: string; label: string; }
-interface StageOption { value: string; label: string; }
+interface UserOption {
+    id: number;
+    name: string;
+}
+interface SourceOption {
+    value: string;
+    label: string;
+}
+interface StageOption {
+    value: string;
+    label: string;
+}
 
 const props = defineProps<{
     users: UserOption[];
@@ -80,7 +89,12 @@ const submit = () => {
                 <div class="grid gap-5 sm:grid-cols-2">
                     <div class="space-y-2">
                         <Label for="source">Origen</Label>
-                        <select id="source" v-model="form.source" required class="h-9 w-full rounded-md border border-input bg-background px-2 text-sm">
+                        <select
+                            id="source"
+                            v-model="form.source"
+                            required
+                            class="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+                        >
                             <option v-for="s in sources" :key="s.value" :value="s.value">{{ s.label }}</option>
                         </select>
                     </div>

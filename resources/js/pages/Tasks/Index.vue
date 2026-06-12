@@ -10,7 +10,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { formatDateTime } from '@/composables/useFormat';
 import { AlertTriangle, Calendar, Check, CheckSquare, Eye, ListChecks, Pencil, Plus, Search, Trash2, User, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
@@ -42,9 +41,18 @@ interface PaginatedTasks {
     links: { url: string | null; label: string; active: boolean }[];
 }
 
-interface PriorityOption { value: string; label: string; }
-interface StatusOption { value: string; label: string; }
-interface UserOption { id: number; name: string; }
+interface PriorityOption {
+    value: string;
+    label: string;
+}
+interface StatusOption {
+    value: string;
+    label: string;
+}
+interface UserOption {
+    id: number;
+    name: string;
+}
 
 const props = defineProps<{
     tasks: PaginatedTasks;
@@ -92,7 +100,15 @@ watch(
     },
 );
 
-const hasFilters = () => !!(props.filters.search || props.filters.priority || props.filters.status || props.filters.assignee_id || props.filters.mine || props.filters.overdue);
+const hasFilters = () =>
+    !!(
+        props.filters.search ||
+        props.filters.priority ||
+        props.filters.status ||
+        props.filters.assignee_id ||
+        props.filters.mine ||
+        props.filters.overdue
+    );
 
 const applyFilters = () => {
     router.get(
@@ -155,10 +171,7 @@ const handleDelete = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Tareas"
-                description="Listado de pendientes, vencidos y por responsable."
-            >
+            <PageHeader title="Tareas" description="Listado de pendientes, vencidos y por responsable.">
                 <template #actions>
                     <Button as-child>
                         <Link :href="route('tasks.create')">
@@ -185,7 +198,11 @@ const handleDelete = () => {
                 <button
                     type="button"
                     class="rounded-xl border p-4 text-left transition-colors"
-                    :class="overdue ? 'border-destructive/60 bg-destructive/5 ring-2 ring-destructive' : 'border-border/60 bg-card hover:border-destructive/40'"
+                    :class="
+                        overdue
+                            ? 'border-destructive/60 bg-destructive/5 ring-2 ring-destructive'
+                            : 'border-border/60 bg-card hover:border-destructive/40'
+                    "
                     @click="toggleOverdue"
                 >
                     <p class="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -213,12 +230,7 @@ const handleDelete = () => {
             <div class="flex flex-wrap items-end gap-2">
                 <div class="relative min-w-[200px] flex-1">
                     <Search class="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-                    <Input
-                        v-model="searchInput"
-                        placeholder="Buscar por título o descripción..."
-                        class="pl-9"
-                        @keyup.enter="applyFilters"
-                    />
+                    <Input v-model="searchInput" placeholder="Buscar por título o descripción..." class="pl-9" @keyup.enter="applyFilters" />
                 </div>
 
                 <div class="flex flex-col gap-1">
@@ -289,7 +301,7 @@ const handleDelete = () => {
                             <TableCell>
                                 <Badge :variant="task.status_badge as any">{{ task.status_label }}</Badge>
                             </TableCell>
-                            <TableCell :class="task.is_overdue ? 'text-destructive font-medium' : 'text-muted-foreground'">
+                            <TableCell :class="task.is_overdue ? 'font-medium text-destructive' : 'text-muted-foreground'">
                                 <div v-if="task.due_date">
                                     <div>{{ task.due_date }}</div>
                                     <div v-if="task.is_due_today" class="text-xs text-amber-600 dark:text-amber-400">Hoy</div>
@@ -316,12 +328,7 @@ const handleDelete = () => {
                                             <Pencil />
                                         </Link>
                                     </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        class="text-destructive hover:text-destructive"
-                                        @click="askDelete(task)"
-                                    >
+                                    <Button variant="ghost" size="icon" class="text-destructive hover:text-destructive" @click="askDelete(task)">
                                         <Trash2 />
                                     </Button>
                                 </div>
@@ -336,12 +343,7 @@ const handleDelete = () => {
                     description="No tienes tareas pendientes. Crea una para empezar."
                     :action="{ label: 'Nueva tarea', href: route('tasks.create') }"
                 />
-                <EmptyState
-                    v-else
-                    :icon="Search"
-                    title="Sin resultados"
-                    description="No encontramos tareas con ese criterio."
-                />
+                <EmptyState v-else :icon="Search" title="Sin resultados" description="No encontramos tareas con ese criterio." />
             </div>
 
             <Pagination v-if="tasks.data.length > 0" :links="tasks.links" />

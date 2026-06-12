@@ -35,17 +35,21 @@ const features = [
 
             <div class="pointer-events-none absolute -left-20 top-1/3 size-72 rounded-full bg-cyan-400/30 blur-3xl"></div>
             <div class="pointer-events-none absolute -right-20 bottom-1/4 size-80 rounded-full bg-teal-300/20 blur-3xl"></div>
-            <div class="pointer-events-none absolute left-1/2 top-1/2 size-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/5 blur-3xl"></div>
+            <div
+                class="pointer-events-none absolute left-1/2 top-1/2 size-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/5 blur-3xl"
+            ></div>
 
             <Link :href="route('home')" class="relative z-10 flex items-center gap-3 text-lg font-semibold">
-                <div class="flex size-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm ring-1 ring-white/20">
+                <div class="flex size-10 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/20 backdrop-blur-sm">
                     <StockFlowLogoIcon class-name="size-6" />
                 </div>
                 {{ name }}
             </Link>
 
             <div class="relative z-10 mt-auto">
-                <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-teal-50 backdrop-blur-sm">
+                <div
+                    class="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-teal-50 backdrop-blur-sm"
+                >
                     <Sparkles class="size-3.5" />
                     Plataforma todo-en-uno
                 </div>
@@ -66,14 +70,12 @@ const features = [
                     </li>
                 </ul>
 
-                <p class="mt-10 text-xs text-teal-100/60">
-                    © {{ new Date().getFullYear() }} {{ name }}. Hecho con Laravel + Vue.
-                </p>
+                <p class="mt-10 text-xs text-teal-100/60">© {{ new Date().getFullYear() }} {{ name }}. Hecho con Laravel + Vue.</p>
             </div>
         </div>
 
         <div class="flex flex-col p-6 sm:p-10">
-            <div class="lg:hidden mb-8">
+            <div class="mb-8 lg:hidden">
                 <Link :href="route('home')" class="inline-flex items-center gap-2.5 text-base font-semibold">
                     <div class="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
                         <StockFlowLogoIcon class-name="size-5" />

@@ -4,8 +4,8 @@ import EmptyState from '@/components/stockflow/EmptyState.vue';
 import PageHeader from '@/components/stockflow/PageHeader.vue';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency } from '@/composables/useFormat';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { ClipboardList } from 'lucide-vue-next';
@@ -38,14 +38,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Reporte de impuestos"
-                description="Detalle de IVA, IEPS y retenciones del periodo."
-            >
+            <PageHeader title="Reporte de impuestos" description="Detalle de IVA, IEPS y retenciones del periodo.">
                 <template #actions>
-                    <Link :href="route('taxes.index')" class="text-sm text-muted-foreground hover:underline">
-                        Gestionar impuestos →
-                    </Link>
+                    <Link :href="route('taxes.index')" class="text-sm text-muted-foreground hover:underline"> Gestionar impuestos → </Link>
                 </template>
             </PageHeader>
 

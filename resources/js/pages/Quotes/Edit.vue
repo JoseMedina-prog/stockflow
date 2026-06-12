@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency } from '@/composables/useFormat';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ArrowLeft, Loader2, Plus, Search, Trash2 } from 'lucide-vue-next';
@@ -83,9 +83,7 @@ const form = useForm<{
     tax: props.quote.tax,
     notes: props.quote.notes ?? '',
     terms: props.quote.terms ?? '',
-    items: props.quote.items.length > 0
-        ? props.quote.items
-        : [{ product_id: null, description: '', quantity: 1, price: 0, discount_percent: 0 }],
+    items: props.quote.items.length > 0 ? props.quote.items : [{ product_id: null, description: '', quantity: 1, price: 0, discount_percent: 0 }],
 });
 
 const productSearch = ref('');
@@ -93,9 +91,7 @@ const productSearch = ref('');
 const filteredProducts = computed(() => {
     const s = productSearch.value.toLowerCase().trim();
     if (!s) return props.products.slice(0, 50);
-    return props.products
-        .filter(p => p.name.toLowerCase().includes(s) || p.sku.toLowerCase().includes(s))
-        .slice(0, 50);
+    return props.products.filter((p) => p.name.toLowerCase().includes(s) || p.sku.toLowerCase().includes(s)).slice(0, 50);
 });
 
 const lineTotal = (item: QuoteFormItem) => {
@@ -134,10 +130,7 @@ const submit = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                :title="`Editar ${quote.folio}`"
-                description="Modifica los datos de la cotización en borrador."
-            >
+            <PageHeader :title="`Editar ${quote.folio}`" description="Modifica los datos de la cotización en borrador.">
                 <template #actions>
                     <Button variant="outline" as-child>
                         <Link :href="route('quotes.show', quote.id)">
@@ -152,7 +145,11 @@ const submit = () => {
                 <div class="grid gap-4 md:grid-cols-3">
                     <div class="space-y-2">
                         <Label for="customer_id">Cliente</Label>
-                        <select id="customer_id" v-model="form.customer_id" class="flex h-9 w-full rounded-md border border-input bg-background px-2 text-sm">
+                        <select
+                            id="customer_id"
+                            v-model="form.customer_id"
+                            class="flex h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+                        >
                             <option :value="null">Consumidor final / sin cliente</option>
                             <option v-for="c in customers" :key="c.id" :value="c.id">{{ c.name }}</option>
                         </select>
@@ -224,7 +221,14 @@ const submit = () => {
                                     <Input v-model.number="item.price" type="number" min="0" step="0.01" class="h-9 text-right" />
                                 </TableCell>
                                 <TableCell>
-                                    <Input v-model.number="item.discount_percent" type="number" min="0" max="100" step="0.01" class="h-9 text-right" />
+                                    <Input
+                                        v-model.number="item.discount_percent"
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        step="0.01"
+                                        class="h-9 text-right"
+                                    />
                                 </TableCell>
                                 <TableCell class="text-right font-semibold tabular-nums">{{ formatCurrency(lineTotal(item)) }}</TableCell>
                                 <TableCell>

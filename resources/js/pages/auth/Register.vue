@@ -127,12 +127,7 @@ const submit = () => {
                     <InputError :message="form.errors.password_confirmation" />
                 </div>
 
-                <Button
-                    type="submit"
-                    class="mt-1 h-10 w-full text-sm font-semibold shadow-sm"
-                    tabindex="5"
-                    :disabled="form.processing"
-                >
+                <Button type="submit" class="mt-1 h-10 w-full text-sm font-semibold shadow-sm" tabindex="5" :disabled="form.processing">
                     <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
                     <span v-else>Crear cuenta</span>
                 </Button>
@@ -140,9 +135,7 @@ const submit = () => {
 
             <p class="text-center text-sm text-muted-foreground">
                 ¿Ya tienes una cuenta?
-                <TextLink :href="route('login')" :tabindex="6" class="font-medium text-foreground">
-                    Inicia sesión
-                </TextLink>
+                <TextLink :href="route('login')" :tabindex="6" class="font-medium text-foreground"> Inicia sesión </TextLink>
             </p>
         </form>
     </AuthLayout>

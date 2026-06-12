@@ -6,11 +6,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import AppLayout from '@/layouts/AppLayout.vue';
+import { formatCurrency, formatDateTime } from '@/composables/useFormat';
 import { usePermissions } from '@/composables/usePermissions';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
-import { formatCurrency, formatDateTime } from '@/composables/useFormat';
 import { ArrowLeft, Check, Mail, Pencil, Phone, Plus, UserCheck, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 
@@ -137,10 +137,7 @@ const handleDeleteActivity = (id: number) => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
             <div class="flex flex-wrap items-start justify-between gap-2">
-                <PageHeader
-                    :title="lead.name"
-                    :description="`Lead creado el ${formatDateTime(lead.created_at)}.`"
-                >
+                <PageHeader :title="lead.name" :description="`Lead creado el ${formatDateTime(lead.created_at)}.`">
                     <template #actions>
                         <Button variant="outline" as-child>
                             <Link :href="route('leads.index')">
@@ -162,12 +159,7 @@ const handleDeleteActivity = (id: number) => {
                             <UserCheck class="mr-1" />
                             Convertir a cliente
                         </Button>
-                        <Button
-                            v-if="lead.can_convert"
-                            variant="outline"
-                            class="text-destructive"
-                            @click="lostOpen = true"
-                        >
+                        <Button v-if="lead.can_convert" variant="outline" class="text-destructive" @click="lostOpen = true">
                             <X class="mr-1" />
                             Marcar perdido
                         </Button>
@@ -175,7 +167,10 @@ const handleDeleteActivity = (id: number) => {
                 </PageHeader>
             </div>
 
-            <div v-if="lead.is_converted" class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-200">
+            <div
+                v-if="lead.is_converted"
+                class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-200"
+            >
                 <p class="flex items-center gap-2 font-medium">
                     <Check class="size-4" />
                     Lead convertido a cliente
@@ -273,9 +268,7 @@ const handleDeleteActivity = (id: number) => {
         <div v-if="convertOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="convertOpen = false">
             <div class="w-full max-w-md rounded-lg bg-card p-6 shadow-xl">
                 <h2 class="text-lg font-semibold">Convertir a cliente</h2>
-                <p class="mt-1 text-sm text-muted-foreground">
-                    Se creará un cliente con estos datos. El lead cambiará a etapa «Ganado».
-                </p>
+                <p class="mt-1 text-sm text-muted-foreground">Se creará un cliente con estos datos. El lead cambiará a etapa «Ganado».</p>
                 <form @submit.prevent="handleConvert" class="mt-4 space-y-4">
                     <div class="space-y-2">
                         <Label for="convert_name">Nombre</Label>
@@ -307,9 +300,7 @@ const handleDeleteActivity = (id: number) => {
         <div v-if="lostOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="lostOpen = false">
             <div class="w-full max-w-md rounded-lg bg-card p-6 shadow-xl">
                 <h2 class="text-lg font-semibold">Marcar como perdido</h2>
-                <p class="mt-1 text-sm text-muted-foreground">
-                    El lead cambiará a etapa «Perdido». Indica el motivo para futuras referencias.
-                </p>
+                <p class="mt-1 text-sm text-muted-foreground">El lead cambiará a etapa «Perdido». Indica el motivo para futuras referencias.</p>
                 <form @submit.prevent="handleMarkLost" class="mt-4 space-y-4">
                     <div class="space-y-2">
                         <Label for="rejection_reason">Motivo</Label>

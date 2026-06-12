@@ -4,12 +4,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import AppLayout from '@/layouts/AppLayout.vue';
+import { formatDateTime } from '@/composables/useFormat';
 import { usePermissions } from '@/composables/usePermissions';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { formatDateTime } from '@/composables/useFormat';
-import { ArrowLeft, Check, CheckCircle, Link2, Pencil, RotateCcw, Trash2 } from 'lucide-vue-next';
+import { ArrowLeft, Check, CheckCircle, Link2, Pencil, RotateCcw } from 'lucide-vue-next';
 
 interface TaskData {
     id: number;

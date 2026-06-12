@@ -3,9 +3,7 @@ import AppContent from '@/components/AppContent.vue';
 import AppShell from '@/components/AppShell.vue';
 import AppSidebar from '@/components/AppSidebar.vue';
 import AppSidebarHeader from '@/components/AppSidebarHeader.vue';
-import Toaster from '@/components/stockflow/Toaster.vue';
 import type { BreadcrumbItemType } from '@/types';
-import { Transition } from 'vue';
 
 interface Props {
     breadcrumbs?: BreadcrumbItemType[];
@@ -35,6 +33,5 @@ withDefaults(defineProps<Props>(), {
                 </div>
             </Transition>
         </AppContent>
-        <Toaster />
     </AppShell>
 </template>

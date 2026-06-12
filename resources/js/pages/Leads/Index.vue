@@ -7,11 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Pagination } from '@/components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatCurrency } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { formatCurrency, formatDateTime } from '@/composables/useFormat';
-import { Eye, LayoutGrid, Pencil, Plus, Search, Trash2, UserPlus, X, Columns2 } from 'lucide-vue-next';
+import { Columns2, Eye, LayoutGrid, Pencil, Plus, Search, Trash2, UserPlus, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
 interface LeadItem {
@@ -56,14 +56,17 @@ interface OwnerOption {
 
 const props = defineProps<{
     leads: PaginatedLeads;
-    kanban: Record<string, Array<{
-        id: number;
-        name: string;
-        company: string | null;
-        estimated_value: number;
-        score: number | null;
-        owner: { id: number; name: string } | null;
-    }>>;
+    kanban: Record<
+        string,
+        Array<{
+            id: number;
+            name: string;
+            company: string | null;
+            estimated_value: number;
+            score: number | null;
+            owner: { id: number; name: string } | null;
+        }>
+    >;
     stages: StageOption[];
     sources: SourceOption[];
     owners: OwnerOption[];
@@ -149,12 +152,7 @@ const handleDelete = () => {
             >
                 <template #actions>
                     <div class="flex items-center rounded-md border border-input">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            :class="['rounded-r-none', view === 'table' ? 'bg-muted' : '']"
-                            @click="view = 'table'"
-                        >
+                        <Button variant="ghost" size="sm" :class="['rounded-r-none', view === 'table' ? 'bg-muted' : '']" @click="view = 'table'">
                             <LayoutGrid class="size-4" />
                             Tabla
                         </Button>
@@ -264,7 +262,13 @@ const handleDelete = () => {
                                         </Link>
                                     </Button>
                                     <Button
-                                        v-if="!lead.is_converted && (lead.stage === 'new' || lead.stage === 'contacted' || lead.stage === 'qualified' || lead.stage === 'proposal')"
+                                        v-if="
+                                            !lead.is_converted &&
+                                            (lead.stage === 'new' ||
+                                                lead.stage === 'contacted' ||
+                                                lead.stage === 'qualified' ||
+                                                lead.stage === 'proposal')
+                                        "
                                         variant="ghost"
                                         size="icon"
                                         as-child
@@ -294,12 +298,7 @@ const handleDelete = () => {
                     description="Registra tu primer lead para empezar a construir tu embudo."
                     :action="{ label: 'Nuevo lead', href: route('leads.create') }"
                 />
-                <EmptyState
-                    v-else
-                    :icon="Search"
-                    title="Sin resultados"
-                    description="No encontramos leads con ese criterio."
-                />
+                <EmptyState v-else :icon="Search" title="Sin resultados" description="No encontramos leads con ese criterio." />
             </div>
 
             <div v-else class="flex gap-3 overflow-x-auto pb-2">

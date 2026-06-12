@@ -2,24 +2,23 @@
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import ThemeToggle from '@/components/stockflow/ThemeToggle.vue';
-import { useCommandPalette } from '@/composables/useCommandPalette';
-import { usePermissions } from '@/composables/usePermissions';
 import {
     Sidebar,
     SidebarContent,
     SidebarFooter,
     SidebarHeader,
     SidebarMenu,
+    SidebarMenuBadge,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarMenuBadge,
 } from '@/components/ui/sidebar';
+import { useCommandPalette } from '@/composables/useCommandPalette';
+import { usePermissions } from '@/composables/usePermissions';
 import { Link } from '@inertiajs/vue3';
 import {
     Activity,
     ArrowLeftRight,
     BarChart3,
-    BookOpen,
     CheckSquare,
     CreditCard,
     FileText,
@@ -49,36 +48,46 @@ interface NavItem {
 
 const { can } = usePermissions();
 
-const platformItems = computed<NavItem[]>(() => [
-    { title: 'Tablero', href: '/dashboard', icon: LayoutGrid, permission: 'dashboard.view_any' },
-    { title: 'Categorías', href: '/categories', icon: Tag, permission: 'categories.view_any' },
-    { title: 'Productos', href: '/products', icon: Package, permission: 'products.view_any' },
-    { title: 'Clientes', href: '/customers', icon: Users, permission: 'customers.view_any' },
-    { title: 'Proveedores', href: '/suppliers', icon: Truck, permission: 'suppliers.view_any' },
-].filter((i) => can(i.permission)));
+const platformItems = computed<NavItem[]>(() =>
+    [
+        { title: 'Tablero', href: '/dashboard', icon: LayoutGrid, permission: 'dashboard.view_any' },
+        { title: 'Categorías', href: '/categories', icon: Tag, permission: 'categories.view_any' },
+        { title: 'Productos', href: '/products', icon: Package, permission: 'products.view_any' },
+        { title: 'Clientes', href: '/customers', icon: Users, permission: 'customers.view_any' },
+        { title: 'Proveedores', href: '/suppliers', icon: Truck, permission: 'suppliers.view_any' },
+    ].filter((i) => can(i.permission)),
+);
 
-const erpItems = computed<NavItem[]>(() => [
-    { title: 'Compras', href: '/purchases', icon: ShoppingBag, permission: 'purchases.view_any' },
-    { title: 'Ventas', href: '/sales', icon: ShoppingCart, permission: 'sales.view_any' },
-    { title: 'Devoluciones', href: '/returns', icon: Undo2, permission: 'returns.view_any' },
-    { title: 'Pagos', href: '/payments', icon: CreditCard, permission: 'payments.view_any' },
-    { title: 'Movimientos', href: '/stock-movements', icon: ArrowLeftRight, permission: 'stock_movements.view_any' },
-].filter((i) => can(i.permission)));
+const erpItems = computed<NavItem[]>(() =>
+    [
+        { title: 'Compras', href: '/purchases', icon: ShoppingBag, permission: 'purchases.view_any' },
+        { title: 'Ventas', href: '/sales', icon: ShoppingCart, permission: 'sales.view_any' },
+        { title: 'Devoluciones', href: '/returns', icon: Undo2, permission: 'returns.view_any' },
+        { title: 'Pagos', href: '/payments', icon: CreditCard, permission: 'payments.view_any' },
+        { title: 'Movimientos', href: '/stock-movements', icon: ArrowLeftRight, permission: 'stock_movements.view_any' },
+    ].filter((i) => can(i.permission)),
+);
 
-const crmItems = computed<NavItem[]>(() => [
-    { title: 'Leads', href: '/leads', icon: UserPlus, permission: 'leads.view_any' },
-    { title: 'Oportunidades', href: '/opportunities', icon: Target, permission: 'opportunities.view_any' },
-    { title: 'Cotizaciones', href: '/quotes', icon: FileText, permission: 'quotes.view_any' },
-    { title: 'Tareas', href: '/tasks', icon: CheckSquare, permission: 'tasks.view_any' },
-    { title: 'Actividades', href: '/activities', icon: Activity, permission: 'activities.view_any' },
-].filter((i) => can(i.permission)));
+const crmItems = computed<NavItem[]>(() =>
+    [
+        { title: 'Leads', href: '/leads', icon: UserPlus, permission: 'leads.view_any' },
+        { title: 'Oportunidades', href: '/opportunities', icon: Target, permission: 'opportunities.view_any' },
+        { title: 'Cotizaciones', href: '/quotes', icon: FileText, permission: 'quotes.view_any' },
+        { title: 'Tareas', href: '/tasks', icon: CheckSquare, permission: 'tasks.view_any' },
+        { title: 'Actividades', href: '/activities', icon: Activity, permission: 'activities.view_any' },
+    ].filter((i) => can(i.permission)),
+);
 
-const reportsItem = computed(() => can('reports.view_any') ? { title: 'Reportes', href: '/reports', icon: BarChart3, permission: 'reports.view_any' } : null);
+const reportsItem = computed(() =>
+    can('reports.view_any') ? { title: 'Reportes', href: '/reports', icon: BarChart3, permission: 'reports.view_any' } : null,
+);
 
-const accountingItems = computed<NavItem[]>(() => [
-    { title: 'Contabilidad', href: '/accounting', icon: Landmark, permission: 'accounting.view_any' },
-    { title: 'Impuestos', href: '/taxes', icon: Percent, permission: 'taxes.view_any' },
-].filter((i) => can(i.permission)));
+const accountingItems = computed<NavItem[]>(() =>
+    [
+        { title: 'Contabilidad', href: '/accounting', icon: Landmark, permission: 'accounting.view_any' },
+        { title: 'Impuestos', href: '/taxes', icon: Percent, permission: 'taxes.view_any' },
+    ].filter((i) => can(i.permission)),
+);
 
 const { open: openCommandPalette, isOpen: commandPaletteOpen } = useCommandPalette();
 
@@ -97,11 +106,7 @@ const CommandPalette = defineAsyncComponent(() => import('@/components/stockflow
                     </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem class="mt-1">
-                    <SidebarMenuButton
-                        size="sm"
-                        class="text-muted-foreground"
-                        @click="openCommandPalette"
-                    >
+                    <SidebarMenuButton size="sm" class="text-muted-foreground" @click="openCommandPalette">
                         <Search />
                         <span>Buscar…</span>
                         <SidebarMenuBadge

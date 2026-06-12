@@ -14,6 +14,7 @@ class Sale extends Model
     use HasFactory;
 
     protected $fillable = [
+        'folio',
         'user_id',
         'customer_id',
         'total',

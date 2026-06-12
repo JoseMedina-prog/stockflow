@@ -5,8 +5,8 @@ import PageHeader from '@/components/stockflow/PageHeader.vue';
 import { Badge } from '@/components/ui/badge';
 import { Pagination } from '@/components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency, formatDate } from '@/composables/useFormat';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { BookOpen, Filter } from 'lucide-vue-next';
@@ -54,11 +54,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 const accountId = ref<string>(props.selectedAccountId ? String(props.selectedAccountId) : '');
 
 watch(accountId, (val) => {
-    router.get(
-        route('accounting.ledger'),
-        { account_id: val || undefined },
-        { preserveScroll: true, preserveState: true },
-    );
+    router.get(route('accounting.ledger'), { account_id: val || undefined }, { preserveScroll: true, preserveState: true });
 });
 </script>
 
@@ -67,24 +63,14 @@ watch(accountId, (val) => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Libro mayor"
-                description="Detalle de movimientos por cuenta contable."
-            >
+            <PageHeader title="Libro mayor" description="Detalle de movimientos por cuenta contable.">
                 <template #actions>
-                    <Link :href="route('accounting.index')" class="text-sm text-muted-foreground hover:underline">
-                        ← Volver al resumen
-                    </Link>
+                    <Link :href="route('accounting.index')" class="text-sm text-muted-foreground hover:underline"> ← Volver al resumen </Link>
                 </template>
             </PageHeader>
 
             <div class="flex flex-wrap items-end gap-2">
-                <DateRangePicker
-                    :from="period.from"
-                    :to="period.to"
-                    route-name="accounting.ledger"
-                    :extra="{ account_id: selectedAccountId }"
-                />
+                <DateRangePicker :from="period.from" :to="period.to" route-name="accounting.ledger" :extra="{ account_id: selectedAccountId }" />
                 <div class="flex flex-col gap-1">
                     <label class="flex items-center gap-1 text-xs text-muted-foreground">
                         <Filter class="size-3" />
@@ -92,9 +78,7 @@ watch(accountId, (val) => {
                     </label>
                     <select v-model="accountId" class="h-9 min-w-[260px] rounded-md border border-input bg-background px-2 text-sm">
                         <option value="">Todas las cuentas</option>
-                        <option v-for="a in accounts" :key="a.id" :value="a.id">
-                            {{ a.code }} — {{ a.name }}
-                        </option>
+                        <option v-for="a in accounts" :key="a.id" :value="a.id">{{ a.code }} — {{ a.name }}</option>
                     </select>
                 </div>
             </div>

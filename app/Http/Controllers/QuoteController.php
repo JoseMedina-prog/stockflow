@@ -400,6 +400,7 @@ class QuoteController extends Controller
             }
 
             $sale = Sale::create([
+                'folio' => FolioGenerator::nextSaleFolio(),
                 'user_id' => $request->user()->id,
                 'customer_id' => $quote->customer_id,
                 'sale_date' => now(),

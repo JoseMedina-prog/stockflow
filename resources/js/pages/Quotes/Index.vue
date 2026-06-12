@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Pagination } from '@/components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency, formatDate } from '@/composables/useFormat';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Check, CircleDollarSign, FileText, Plus, Search, X } from 'lucide-vue-next';
@@ -37,7 +37,10 @@ interface PaginatedQuotes {
     links: { url: string | null; label: string; active: boolean }[];
 }
 
-interface StatusOption { value: string; label: string; }
+interface StatusOption {
+    value: string;
+    label: string;
+}
 
 const props = defineProps<{
     quotes: PaginatedQuotes;
@@ -68,22 +71,29 @@ const status = ref(props.filters.status ?? '');
 const from = ref(props.filters.from ?? '');
 const to = ref(props.filters.to ?? '');
 
-watch(() => props.filters, (f) => {
-    searchInput.value = f.search ?? '';
-    status.value = f.status ?? '';
-    from.value = f.from ?? '';
-    to.value = f.to ?? '';
-});
+watch(
+    () => props.filters,
+    (f) => {
+        searchInput.value = f.search ?? '';
+        status.value = f.status ?? '';
+        from.value = f.from ?? '';
+        to.value = f.to ?? '';
+    },
+);
 
 const hasFilters = () => !!(props.filters.search || props.filters.status || props.filters.from || props.filters.to);
 
 const applyFilters = () => {
-    router.get(route('quotes.index'), {
-        search: searchInput.value || undefined,
-        status: status.value || undefined,
-        from: from.value || undefined,
-        to: to.value || undefined,
-    }, { preserveScroll: true, preserveState: true });
+    router.get(
+        route('quotes.index'),
+        {
+            search: searchInput.value || undefined,
+            status: status.value || undefined,
+            from: from.value || undefined,
+            to: to.value || undefined,
+        },
+        { preserveScroll: true, preserveState: true },
+    );
 };
 
 const clearFilters = () => {
@@ -96,10 +106,7 @@ const clearFilters = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Cotizaciones"
-                description="Crea, envía y convierte cotizaciones en ventas."
-            >
+            <PageHeader title="Cotizaciones" description="Crea, envía y convierte cotizaciones en ventas.">
                 <template #actions>
                     <Button as-child>
                         <Link :href="route('quotes.create')">
@@ -137,12 +144,7 @@ const clearFilters = () => {
             <div class="flex flex-wrap items-end gap-2">
                 <div class="relative min-w-[200px] flex-1">
                     <Search class="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-                    <Input
-                        v-model="searchInput"
-                        placeholder="Buscar por folio o cliente..."
-                        class="pl-9"
-                        @keyup.enter="applyFilters"
-                    />
+                    <Input v-model="searchInput" placeholder="Buscar por folio o cliente..." class="pl-9" @keyup.enter="applyFilters" />
                 </div>
 
                 <div class="flex flex-col gap-1">
@@ -192,9 +194,7 @@ const clearFilters = () => {
                             <TableCell>
                                 <span v-if="q.customer" class="font-medium">{{ q.customer.name }}</span>
                                 <span v-else class="text-muted-foreground">—</span>
-                                <div v-if="q.opportunity" class="text-xs text-muted-foreground">
-                                    Desde oportunidad: {{ q.opportunity.name }}
-                                </div>
+                                <div v-if="q.opportunity" class="text-xs text-muted-foreground">Desde oportunidad: {{ q.opportunity.name }}</div>
                             </TableCell>
                             <TableCell class="text-xs text-muted-foreground">{{ formatDate(q.quote_date) }}</TableCell>
                             <TableCell class="text-xs">
@@ -219,12 +219,7 @@ const clearFilters = () => {
                     description="Empieza creando tu primera cotización."
                     :action="{ label: 'Nueva cotización', href: route('quotes.create') }"
                 />
-                <EmptyState
-                    v-else
-                    :icon="Search"
-                    title="Sin resultados"
-                    description="No encontramos cotizaciones con ese criterio."
-                />
+                <EmptyState v-else :icon="Search" title="Sin resultados" description="No encontramos cotizaciones con ese criterio." />
             </div>
 
             <Pagination v-if="quotes.data.length > 0" :links="quotes.links" />

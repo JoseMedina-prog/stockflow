@@ -122,9 +122,7 @@ const submit = () => {
 
             <p class="text-center text-sm text-muted-foreground">
                 ¿No tienes una cuenta?
-                <TextLink :href="route('register')" :tabindex="5" class="font-medium text-foreground">
-                    Crea una gratis
-                </TextLink>
+                <TextLink :href="route('register')" :tabindex="5" class="font-medium text-foreground"> Crea una gratis </TextLink>
             </p>
         </form>
     </AuthLayout>

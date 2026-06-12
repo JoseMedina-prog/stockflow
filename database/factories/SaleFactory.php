@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Customer;
 use App\Models\Sale;
 use App\Models\User;
+use App\Support\FolioGenerator;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,6 +18,7 @@ class SaleFactory extends Factory
     public function definition(): array
     {
         return [
+            'folio' => FolioGenerator::nextSaleFolio(),
             'user_id' => User::factory(),
             'customer_id' => Customer::factory(),
             'total' => 0,

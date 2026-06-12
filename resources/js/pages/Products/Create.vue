@@ -74,14 +74,7 @@ const submit = () => {
 
                     <div class="space-y-2">
                         <Label for="price">Precio</Label>
-                        <Input
-                            id="price"
-                            v-model="form.price"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            required
-                        />
+                        <Input id="price" v-model="form.price" type="number" step="0.01" min="0" required />
                         <p v-if="form.errors.price" class="text-sm text-destructive">{{ form.errors.price }}</p>
                     </div>
 
@@ -93,16 +86,8 @@ const submit = () => {
 
                     <div class="space-y-2">
                         <Label for="min_stock">Stock mínimo</Label>
-                        <Input
-                            id="min_stock"
-                            v-model="form.min_stock"
-                            type="number"
-                            min="0"
-                            required
-                        />
-                        <p class="text-xs text-muted-foreground">
-                            Se mostrará una alerta cuando el stock sea igual o menor a este valor.
-                        </p>
+                        <Input id="min_stock" v-model="form.min_stock" type="number" min="0" required />
+                        <p class="text-xs text-muted-foreground">Se mostrará una alerta cuando el stock sea igual o menor a este valor.</p>
                         <p v-if="form.errors.min_stock" class="text-sm text-destructive">
                             {{ form.errors.min_stock }}
                         </p>

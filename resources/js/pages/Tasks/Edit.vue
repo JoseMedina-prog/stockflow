@@ -7,10 +7,23 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Loader2 } from 'lucide-vue-next';
 
-interface PriorityOption { value: string; label: string; }
-interface StatusOption { value: string; label: string; }
-interface UserOption { id: number; name: string; }
-interface TaskableOption { type: string; id: number; label: string; }
+interface PriorityOption {
+    value: string;
+    label: string;
+}
+interface StatusOption {
+    value: string;
+    label: string;
+}
+interface UserOption {
+    id: number;
+    name: string;
+}
+interface TaskableOption {
+    type: string;
+    id: number;
+    label: string;
+}
 
 interface TaskData {
     id: number;
@@ -96,19 +109,34 @@ const submit = () => {
                 <div class="grid gap-5 sm:grid-cols-3">
                     <div class="space-y-2">
                         <Label for="priority">Prioridad</Label>
-                        <select id="priority" v-model="form.priority" required class="h-9 w-full rounded-md border border-input bg-background px-2 text-sm">
+                        <select
+                            id="priority"
+                            v-model="form.priority"
+                            required
+                            class="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+                        >
                             <option v-for="p in priorities" :key="p.value" :value="p.value">{{ p.label }}</option>
                         </select>
                     </div>
                     <div class="space-y-2">
                         <Label for="status">Estado</Label>
-                        <select id="status" v-model="form.status" required class="h-9 w-full rounded-md border border-input bg-background px-2 text-sm">
+                        <select
+                            id="status"
+                            v-model="form.status"
+                            required
+                            class="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+                        >
                             <option v-for="s in statuses" :key="s.value" :value="s.value">{{ s.label }}</option>
                         </select>
                     </div>
                     <div class="space-y-2">
                         <Label for="assigned_to">Asignado a</Label>
-                        <select id="assigned_to" v-model="form.assigned_to" required class="h-9 w-full rounded-md border border-input bg-background px-2 text-sm">
+                        <select
+                            id="assigned_to"
+                            v-model="form.assigned_to"
+                            required
+                            class="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+                        >
                             <option v-for="u in users" :key="u.id" :value="u.id">{{ u.name }}</option>
                         </select>
                     </div>
@@ -119,7 +147,11 @@ const submit = () => {
                     <div class="grid gap-3 sm:grid-cols-2">
                         <div class="space-y-2">
                             <Label for="taskable_type">Tipo</Label>
-                            <select id="taskable_type" v-model="form.taskable_type" class="h-9 w-full rounded-md border border-input bg-background px-2 text-sm">
+                            <select
+                                id="taskable_type"
+                                v-model="form.taskable_type"
+                                class="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+                            >
                                 <option value="">Sin relación</option>
                                 <option value="customer">Cliente</option>
                                 <option value="lead">Lead</option>

@@ -7,9 +7,18 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Loader2 } from 'lucide-vue-next';
 
-interface StageOption { value: string; label: string; }
-interface CustomerOption { id: number; name: string; }
-interface UserOption { id: number; name: string; }
+interface StageOption {
+    value: string;
+    label: string;
+}
+interface CustomerOption {
+    id: number;
+    name: string;
+}
+interface UserOption {
+    id: number;
+    name: string;
+}
 
 interface OppData {
     id: number;
@@ -73,7 +82,11 @@ const submit = () => {
                 <div class="grid gap-5 sm:grid-cols-2">
                     <div class="space-y-2">
                         <Label for="customer_id">Cliente</Label>
-                        <select id="customer_id" v-model="form.customer_id" class="h-9 w-full rounded-md border border-input bg-background px-2 text-sm">
+                        <select
+                            id="customer_id"
+                            v-model="form.customer_id"
+                            class="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+                        >
                             <option value="">Sin cliente</option>
                             <option v-for="c in customers" :key="c.id" :value="c.id">{{ c.name }}</option>
                         </select>
@@ -111,7 +124,12 @@ const submit = () => {
 
                 <div class="space-y-2">
                     <Label for="notes">Notas</Label>
-                    <textarea id="notes" v-model="form.notes" rows="3" class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm" />
+                    <textarea
+                        id="notes"
+                        v-model="form.notes"
+                        rows="3"
+                        class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm"
+                    />
                 </div>
 
                 <div class="flex items-center justify-end gap-2">

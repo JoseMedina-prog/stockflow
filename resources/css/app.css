@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import 'vue-sonner/style.css';
-
 @layer base {
     :root {
         --background: 0 0% 100%;
@@ -79,9 +77,11 @@
     }
 
     body {
-        @apply bg-background text-foreground font-sans;
+        @apply bg-background font-sans text-foreground;
         font-feature-settings: 'cv11', 'ss01', 'ss03';
-        transition: background-color 200ms ease, color 200ms ease;
+        transition:
+            background-color 200ms ease,
+            color 200ms ease;
     }
 
     :focus-visible {

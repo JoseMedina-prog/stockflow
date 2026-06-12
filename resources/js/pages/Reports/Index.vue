@@ -4,10 +4,10 @@ import StockBadge from '@/components/stockflow/StockBadge.vue';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatCurrency, formatDateTime } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
-import { formatCurrency, formatDateTime } from '@/composables/useFormat';
 import { BarChart3, DollarSign, Package, ShoppingCart, TrendingUp } from 'lucide-vue-next';
 
 defineProps<{
@@ -58,9 +58,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         <div class="flex h-full flex-1 flex-col gap-6 p-4">
             <div>
                 <h1 class="text-2xl font-semibold tracking-tight">Reportes</h1>
-                <p class="mt-1 text-sm text-muted-foreground">
-                    Métricas agregadas del negocio.
-                </p>
+                <p class="mt-1 text-sm text-muted-foreground">Métricas agregadas del negocio.</p>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-3">
@@ -167,9 +165,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <TableBody>
                                 <TableRow v-for="sale in recentSales" :key="sale.id">
                                     <TableCell class="font-mono text-xs">
-                                        <Link :href="route('sales.show', sale.id)" class="hover:underline">
-                                            #{{ sale.id }}
-                                        </Link>
+                                        <Link :href="route('sales.show', sale.id)" class="hover:underline"> #{{ sale.id }} </Link>
                                     </TableCell>
                                     <TableCell class="text-sm">{{ formatDateTime(sale.sale_date) }}</TableCell>
                                     <TableCell>{{ sale.customer ?? 'Consumidor final' }}</TableCell>
@@ -193,8 +189,8 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <CardHeader>
                     <CardTitle class="text-base">Inventario actual</CardTitle>
                     <CardDescription>
-                        {{ summary.inventory_count }} productos —
-                        valor total: <span class="font-semibold text-foreground">{{ formatCurrency(summary.inventory_value) }}</span>
+                        {{ summary.inventory_count }} productos — valor total:
+                        <span class="font-semibold text-foreground">{{ formatCurrency(summary.inventory_value) }}</span>
                     </CardDescription>
                 </CardHeader>
                 <CardContent>

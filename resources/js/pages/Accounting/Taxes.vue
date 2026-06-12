@@ -28,7 +28,10 @@ interface TaxData {
     description: string | null;
 }
 
-interface TypeOption { value: string; label: string; }
+interface TypeOption {
+    value: string;
+    label: string;
+}
 
 defineProps<{
     taxes: TaxData[];
@@ -124,10 +127,7 @@ const handleDelete = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Impuestos"
-                description="Configura los impuestos que se aplican a tus ventas y compras."
-            >
+            <PageHeader title="Impuestos" description="Configura los impuestos que se aplican a tus ventas y compras.">
                 <template #actions>
                     <Button @click="startCreate">
                         <Plus class="mr-1" />
@@ -174,12 +174,7 @@ const handleDelete = () => {
                                         <Button variant="ghost" size="icon" @click="startEdit(t)">
                                             <Pencil class="size-4" />
                                         </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            class="text-destructive hover:text-destructive"
-                                            @click="askDelete(t)"
-                                        >
+                                        <Button variant="ghost" size="icon" class="text-destructive hover:text-destructive" @click="askDelete(t)">
                                             <Trash2 class="size-4" />
                                         </Button>
                                     </div>
@@ -221,7 +216,12 @@ const handleDelete = () => {
                         </div>
                         <div class="space-y-2">
                             <Label for="type">Tipo</Label>
-                            <select id="type" v-model="form.type" class="flex h-9 w-full rounded-md border border-input bg-background px-2 text-sm" required>
+                            <select
+                                id="type"
+                                v-model="form.type"
+                                class="flex h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+                                required
+                            >
                                 <option v-for="t in types" :key="t.value" :value="t.value">{{ t.label }}</option>
                             </select>
                             <p v-if="form.errors.type" class="text-sm text-destructive">{{ form.errors.type }}</p>
@@ -244,7 +244,11 @@ const handleDelete = () => {
                         <div class="space-y-2">
                             <Label>Estado</Label>
                             <label class="flex items-center gap-2 text-sm">
-                                <input v-model="form.is_active" type="checkbox" class="size-4 rounded border-input text-primary focus:ring-1 focus:ring-ring" />
+                                <input
+                                    v-model="form.is_active"
+                                    type="checkbox"
+                                    class="size-4 rounded border-input text-primary focus:ring-1 focus:ring-ring"
+                                />
                                 Impuesto activo
                             </label>
                         </div>

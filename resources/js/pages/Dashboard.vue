@@ -7,23 +7,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatCurrency, formatDateTime } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/vue3';
+import { AlertTriangle, ArrowDown, ArrowRight, ArrowUp, DollarSign, ShoppingBag, ShoppingCart, TrendingUp, Users } from 'lucide-vue-next';
 import { computed } from 'vue';
-import { formatCurrency, formatDateTime } from '@/composables/useFormat';
-import {
-    AlertTriangle,
-    ArrowDown,
-    ArrowRight,
-    ArrowUp,
-    DollarSign,
-    Package,
-    ShoppingBag,
-    ShoppingCart,
-    TrendingUp,
-    Users,
-} from 'lucide-vue-next';
 
 type RecentSale = { id: number; sale_date: string; total: number; customer: string | null };
 type LowStockProduct = {
@@ -151,7 +140,7 @@ const cashflowTotal = computed(() => props.chart.reduce((acc, d) => acc + d.cash
                 <h1 class="text-2xl font-semibold tracking-tight">
                     {{ greeting }}, <span class="text-primary">{{ userName }}</span>
                 </h1>
-                <p class="text-sm text-muted-foreground capitalize">{{ todayLabel }}</p>
+                <p class="text-sm capitalize text-muted-foreground">{{ todayLabel }}</p>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
@@ -313,7 +302,11 @@ const cashflowTotal = computed(() => props.chart.reduce((acc, d) => acc + d.cash
                                 <p class="line-clamp-2 font-medium">{{ t.title }}</p>
                                 <Badge :variant="t.priority_badge as any" class="shrink-0">{{ t.priority_label[0] }}</Badge>
                             </div>
-                            <p v-if="t.due_date" class="mt-1 text-xs" :class="t.is_overdue ? 'text-destructive font-medium' : 'text-muted-foreground'">
+                            <p
+                                v-if="t.due_date"
+                                class="mt-1 text-xs"
+                                :class="t.is_overdue ? 'font-medium text-destructive' : 'text-muted-foreground'"
+                            >
                                 {{ t.due_date }}
                                 <span v-if="t.is_due_today" class="text-amber-600 dark:text-amber-400">· vence hoy</span>
                                 <span v-else-if="t.is_overdue" class="text-destructive">· vencida</span>
@@ -351,7 +344,7 @@ const cashflowTotal = computed(() => props.chart.reduce((acc, d) => acc + d.cash
                             </div>
                             <div class="text-right">
                                 <p class="text-sm font-semibold tabular-nums">{{ p.total_quantity }} und</p>
-                                <p class="text-xs text-muted-foreground tabular-nums">{{ formatCurrency(p.total_revenue) }}</p>
+                                <p class="text-xs tabular-nums text-muted-foreground">{{ formatCurrency(p.total_revenue) }}</p>
                             </div>
                         </div>
                         <EmptyState
@@ -389,16 +382,12 @@ const cashflowTotal = computed(() => props.chart.reduce((acc, d) => acc + d.cash
                             <TableBody>
                                 <TableRow v-for="ar in accountsReceivable" :key="ar.id">
                                     <TableCell>
-                                        <Link :href="route('sales.show', ar.id)" class="font-mono text-xs hover:underline">
-                                            #{{ ar.id }}
-                                        </Link>
+                                        <Link :href="route('sales.show', ar.id)" class="font-mono text-xs hover:underline"> #{{ ar.id }} </Link>
                                     </TableCell>
                                     <TableCell class="text-sm">{{ ar.customer?.name ?? 'Consumidor final' }}</TableCell>
                                     <TableCell>
                                         <div class="text-sm">{{ ar.sale_date }}</div>
-                                        <div v-if="ar.days_overdue > 0" class="text-xs text-destructive">
-                                            {{ ar.days_overdue }} días vencidos
-                                        </div>
+                                        <div v-if="ar.days_overdue > 0" class="text-xs text-destructive">{{ ar.days_overdue }} días vencidos</div>
                                     </TableCell>
                                     <TableCell class="text-right font-semibold tabular-nums text-destructive">
                                         {{ formatCurrency(ar.balance) }}
@@ -406,12 +395,7 @@ const cashflowTotal = computed(() => props.chart.reduce((acc, d) => acc + d.cash
                                 </TableRow>
                             </TableBody>
                         </Table>
-                        <EmptyState
-                            v-else
-                            :icon="DollarSign"
-                            title="¡Sin cuentas por cobrar!"
-                            description="Todas las ventas están al corriente."
-                        />
+                        <EmptyState v-else :icon="DollarSign" title="¡Sin cuentas por cobrar!" description="Todas las ventas están al corriente." />
                     </CardContent>
                 </Card>
 
@@ -447,9 +431,7 @@ const cashflowTotal = computed(() => props.chart.reduce((acc, d) => acc + d.cash
                                     <TableCell class="text-sm">{{ ap.supplier.name }}</TableCell>
                                     <TableCell>
                                         <div class="text-sm">{{ ap.purchase_date }}</div>
-                                        <div v-if="ap.days_overdue > 0" class="text-xs text-destructive">
-                                            {{ ap.days_overdue }} días vencidos
-                                        </div>
+                                        <div v-if="ap.days_overdue > 0" class="text-xs text-destructive">{{ ap.days_overdue }} días vencidos</div>
                                     </TableCell>
                                     <TableCell class="text-right font-semibold tabular-nums text-destructive">
                                         {{ formatCurrency(ap.balance) }}
@@ -457,12 +439,7 @@ const cashflowTotal = computed(() => props.chart.reduce((acc, d) => acc + d.cash
                                 </TableRow>
                             </TableBody>
                         </Table>
-                        <EmptyState
-                            v-else
-                            :icon="DollarSign"
-                            title="¡Sin cuentas por pagar!"
-                            description="Todas las compras están liquidadas."
-                        />
+                        <EmptyState v-else :icon="DollarSign" title="¡Sin cuentas por pagar!" description="Todas las compras están liquidadas." />
                     </CardContent>
                 </Card>
             </div>
@@ -485,17 +462,11 @@ const cashflowTotal = computed(() => props.chart.reduce((acc, d) => acc + d.cash
                         >
                             <div class="min-w-0 flex-1">
                                 <p class="truncate text-sm font-medium">{{ c.name }}</p>
-                                <p class="text-xs text-muted-foreground">
-                                    {{ c.sales_count }} {{ c.sales_count === 1 ? 'compra' : 'compras' }}
-                                </p>
+                                <p class="text-xs text-muted-foreground">{{ c.sales_count }} {{ c.sales_count === 1 ? 'compra' : 'compras' }}</p>
                             </div>
                             <span class="text-sm font-semibold tabular-nums">{{ formatCurrency(c.total_spent) }}</span>
                         </div>
-                        <EmptyState
-                            v-if="topCustomers.length === 0"
-                            title="Sin datos"
-                            description="No hay clientes con ventas registradas."
-                        />
+                        <EmptyState v-if="topCustomers.length === 0" title="Sin datos" description="No hay clientes con ventas registradas." />
                     </CardContent>
                 </Card>
 
@@ -505,7 +476,9 @@ const cashflowTotal = computed(() => props.chart.reduce((acc, d) => acc + d.cash
                     </CardHeader>
                     <CardContent>
                         <div class="flex items-center gap-3">
-                            <div class="flex size-10 items-center justify-center rounded-xl bg-violet-500/10 text-violet-700 ring-1 ring-violet-500/20 dark:text-violet-300">
+                            <div
+                                class="flex size-10 items-center justify-center rounded-xl bg-violet-500/10 text-violet-700 ring-1 ring-violet-500/20 dark:text-violet-300"
+                            >
                                 <Users class="size-5" />
                             </div>
                             <div>
@@ -535,9 +508,7 @@ const cashflowTotal = computed(() => props.chart.reduce((acc, d) => acc + d.cash
                                 <p class="truncate text-sm font-medium">{{ p.name }}</p>
                                 <p class="truncate font-mono text-xs text-muted-foreground">{{ p.sku }}</p>
                             </div>
-                            <Badge :variant="p.stock === 0 ? 'destructive' : 'warning'">
-                                {{ p.stock }} / {{ p.min_stock }}
-                            </Badge>
+                            <Badge :variant="p.stock === 0 ? 'destructive' : 'warning'"> {{ p.stock }} / {{ p.min_stock }} </Badge>
                         </div>
                     </CardContent>
                 </Card>
@@ -547,9 +518,7 @@ const cashflowTotal = computed(() => props.chart.reduce((acc, d) => acc + d.cash
                         <CardTitle class="text-base">Inventario saludable</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p class="text-sm text-muted-foreground">
-                            Todos los productos tienen stock por encima de su mínimo.
-                        </p>
+                        <p class="text-sm text-muted-foreground">Todos los productos tienen stock por encima de su mínimo.</p>
                     </CardContent>
                 </Card>
             </div>

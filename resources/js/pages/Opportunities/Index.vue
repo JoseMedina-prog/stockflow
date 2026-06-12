@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Pagination } from '@/components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatCurrency } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { formatCurrency } from '@/composables/useFormat';
 import { Eye, KanbanSquare, LayoutGrid, Pencil, Plus, Search, Target, Trash2, X } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
@@ -56,8 +56,14 @@ interface StageOption {
     open: boolean;
 }
 
-interface CustomerOption { id: number; name: string; }
-interface OwnerOption { id: number; name: string; }
+interface CustomerOption {
+    id: number;
+    name: string;
+}
+interface OwnerOption {
+    id: number;
+    name: string;
+}
 interface Summary {
     open_count: number;
     open_value: number;
@@ -152,18 +158,10 @@ const openStages = computed(() => props.stages.filter((s) => s.open));
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Pipeline de ventas"
-                description="Embudo de oportunidades: prospección, calificación, propuesta, negociación, cierre."
-            >
+            <PageHeader title="Pipeline de ventas" description="Embudo de oportunidades: prospección, calificación, propuesta, negociación, cierre.">
                 <template #actions>
                     <div class="flex items-center rounded-md border border-input">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            :class="['rounded-r-none', view === 'kanban' ? 'bg-muted' : '']"
-                            @click="view = 'kanban'"
-                        >
+                        <Button variant="ghost" size="sm" :class="['rounded-r-none', view === 'kanban' ? 'bg-muted' : '']" @click="view = 'kanban'">
                             <KanbanSquare class="size-4" />
                             Kanban
                         </Button>
@@ -220,12 +218,7 @@ const openStages = computed(() => props.stages.filter((s) => s.open));
             <div class="flex flex-wrap items-end gap-2">
                 <div class="relative min-w-[200px] flex-1">
                     <Search class="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-                    <Input
-                        v-model="searchInput"
-                        placeholder="Buscar por nombre, notas o cliente..."
-                        class="pl-9"
-                        @keyup.enter="applyFilters"
-                    />
+                    <Input v-model="searchInput" placeholder="Buscar por nombre, notas o cliente..." class="pl-9" @keyup.enter="applyFilters" />
                 </div>
 
                 <div class="flex flex-col gap-1">
@@ -259,11 +252,7 @@ const openStages = computed(() => props.stages.filter((s) => s.open));
             </div>
 
             <div v-if="view === 'kanban'" class="flex gap-3 overflow-x-auto pb-2">
-                <div
-                    v-for="s in openStages"
-                    :key="s.value"
-                    class="flex w-72 shrink-0 flex-col gap-2 rounded-lg bg-muted/40 p-3"
-                >
+                <div v-for="s in openStages" :key="s.value" class="flex w-72 shrink-0 flex-col gap-2 rounded-lg bg-muted/40 p-3">
                     <div class="flex items-center justify-between px-1">
                         <div class="flex items-center gap-2">
                             <Badge :variant="s.badge as any">{{ s.label }}</Badge>
@@ -287,7 +276,7 @@ const openStages = computed(() => props.stages.filter((s) => s.open));
                             <span class="text-muted-foreground">{{ card.probability }}%</span>
                         </div>
                         <div class="mt-1 flex items-center justify-between text-xs text-muted-foreground">
-                            <span v-if="card.expected_close_date" :class="card.is_overdue ? 'text-destructive font-medium' : ''">
+                            <span v-if="card.expected_close_date" :class="card.is_overdue ? 'font-medium text-destructive' : ''">
                                 {{ card.expected_close_date }}
                                 <span v-if="card.is_overdue" class="text-destructive">· vencida</span>
                             </span>
@@ -365,12 +354,7 @@ const openStages = computed(() => props.stages.filter((s) => s.open));
                     description="Registra tu primera oportunidad para empezar a llenar el pipeline."
                     :action="{ label: 'Nueva oportunidad', href: route('opportunities.create') }"
                 />
-                <EmptyState
-                    v-else
-                    :icon="Search"
-                    title="Sin resultados"
-                    description="No encontramos oportunidades con ese criterio."
-                />
+                <EmptyState v-else :icon="Search" title="Sin resultados" description="No encontramos oportunidades con ese criterio." />
             </div>
 
             <Pagination v-if="view === 'table' && opportunities.data.length > 0" :links="opportunities.links" />

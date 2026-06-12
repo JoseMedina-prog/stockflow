@@ -64,10 +64,7 @@ const handleDelete = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Categorías"
-                description="Gestiona las categorías de tus productos."
-            >
+            <PageHeader title="Categorías" description="Gestiona las categorías de tus productos.">
                 <template #actions>
                     <Button as-child>
                         <Link :href="route('categories.create')">
@@ -104,12 +101,7 @@ const handleDelete = () => {
                                             <Pencil />
                                         </Link>
                                     </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        class="text-destructive hover:text-destructive"
-                                        @click="askDelete(category)"
-                                    >
+                                    <Button variant="ghost" size="icon" class="text-destructive hover:text-destructive" @click="askDelete(category)">
                                         <Trash2 />
                                     </Button>
                                 </div>

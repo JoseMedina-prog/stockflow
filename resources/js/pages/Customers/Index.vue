@@ -7,11 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Pagination } from '@/components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatCurrency } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { formatCurrency } from '@/composables/useFormat';
-import { Eye, Mail, Pencil, Phone, Plus, Search, Trash2, UserPlus, X } from 'lucide-vue-next';
+import { Mail, Pencil, Phone, Plus, Search, Trash2, UserPlus, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
 interface CustomerItem {
@@ -48,11 +48,7 @@ watch(
 );
 
 const applyFilters = () => {
-    router.get(
-        route('customers.index'),
-        { search: searchInput.value || undefined },
-        { preserveScroll: true, preserveState: true },
-    );
+    router.get(route('customers.index'), { search: searchInput.value || undefined }, { preserveScroll: true, preserveState: true });
 };
 
 const clearFilters = () => {
@@ -87,10 +83,7 @@ const handleDelete = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Clientes"
-                description="Gestiona los clientes de la tienda."
-            >
+            <PageHeader title="Clientes" description="Gestiona los clientes de la tienda.">
                 <template #actions>
                     <Button as-child>
                         <Link :href="route('customers.create')">
@@ -104,12 +97,7 @@ const handleDelete = () => {
             <div class="flex items-center gap-2">
                 <div class="relative flex-1">
                     <Search class="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-                    <Input
-                        v-model="searchInput"
-                        placeholder="Buscar por nombre, email o teléfono..."
-                        class="pl-9"
-                        @keyup.enter="applyFilters"
-                    />
+                    <Input v-model="searchInput" placeholder="Buscar por nombre, email o teléfono..." class="pl-9" @keyup.enter="applyFilters" />
                 </div>
                 <Button v-if="filters.search" variant="ghost" @click="clearFilters">
                     <X class="mr-1" />
@@ -153,27 +141,17 @@ const handleDelete = () => {
                             <TableCell class="text-center">
                                 <Badge variant="secondary">{{ customer.sales_count }}</Badge>
                             </TableCell>
-                            <TableCell class="text-right tabular-nums text-sm">
+                            <TableCell class="text-right text-sm tabular-nums">
                                 {{ formatCurrency(customer.total_spent) }}
                             </TableCell>
                             <TableCell class="text-right">
                                 <div class="flex justify-end gap-1">
                                     <Button variant="ghost" size="icon" as-child>
-                                        <Link :href="route('customers.index')">
-                                            <Eye />
-                                        </Link>
-                                    </Button>
-                                    <Button variant="ghost" size="icon" as-child>
                                         <Link :href="route('customers.edit', customer.id)">
                                             <Pencil />
                                         </Link>
                                     </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        class="text-destructive hover:text-destructive"
-                                        @click="askDelete(customer)"
-                                    >
+                                    <Button variant="ghost" size="icon" class="text-destructive hover:text-destructive" @click="askDelete(customer)">
                                         <Trash2 />
                                     </Button>
                                 </div>
@@ -188,12 +166,7 @@ const handleDelete = () => {
                     description="Registra tu primer cliente para empezar a vender."
                     :action="{ label: 'Nuevo cliente', href: route('customers.create') }"
                 />
-                <EmptyState
-                    v-else
-                    :icon="Search"
-                    title="Sin resultados"
-                    description="No encontramos clientes con ese criterio."
-                />
+                <EmptyState v-else :icon="Search" title="Sin resultados" description="No encontramos clientes con ese criterio." />
             </div>
 
             <Pagination v-if="customers.data.length > 0" :links="customers.links" />

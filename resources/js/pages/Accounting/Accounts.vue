@@ -48,14 +48,9 @@ const grouped = (accounts: any[]) => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Catálogo de cuentas"
-                description="Plan contable base. Solo lectura: las cuentas del sistema las crea el seeder."
-            >
+            <PageHeader title="Catálogo de cuentas" description="Plan contable base. Solo lectura: las cuentas del sistema las crea el seeder.">
                 <template #actions>
-                    <Link :href="route('accounting.index')" class="text-sm text-muted-foreground hover:underline">
-                        ← Volver al resumen
-                    </Link>
+                    <Link :href="route('accounting.index')" class="text-sm text-muted-foreground hover:underline"> ← Volver al resumen </Link>
                 </template>
             </PageHeader>
 

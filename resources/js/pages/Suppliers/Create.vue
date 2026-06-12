@@ -101,11 +101,7 @@ const submit = () => {
                 </div>
 
                 <label class="flex items-center gap-2 text-sm">
-                    <input
-                        v-model="form.is_active"
-                        type="checkbox"
-                        class="size-4 rounded border-input text-primary focus:ring-1 focus:ring-ring"
-                    />
+                    <input v-model="form.is_active" type="checkbox" class="size-4 rounded border-input text-primary focus:ring-1 focus:ring-ring" />
                     <span>Proveedor activo</span>
                 </label>
 

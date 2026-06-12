@@ -4,10 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
+import { formatCurrency } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { formatCurrency } from '@/composables/useFormat';
 import { Loader2, Plus, Trash2 } from 'lucide-vue-next';
 import { computed } from 'vue';
 
@@ -71,8 +71,7 @@ const removeItem = (index: number) => {
     if (form.items.length === 0) addItem();
 };
 
-const getProduct = (id: string): ProductOption | undefined =>
-    props.products.find((p) => String(p.id) === String(id));
+const getProduct = (id: string): ProductOption | undefined => props.products.find((p) => String(p.id) === String(id));
 
 const onProductChange = (index: number) => {
     const product = getProduct(form.items[index].product_id);
@@ -87,9 +86,7 @@ const subtotalOf = (item: { product_id: string; quantity: number; unit_cost: num
     return Math.round(qty * cost * 100) / 100;
 };
 
-const total = computed(() =>
-    Math.round(form.items.reduce((acc, item) => acc + subtotalOf(item), 0) * 100) / 100,
-);
+const total = computed(() => Math.round(form.items.reduce((acc, item) => acc + subtotalOf(item), 0) * 100) / 100);
 
 const submit = () => {
     form.put(route('purchases.update', props.purchase.id), {
@@ -105,7 +102,10 @@ const submit = () => {
         <div class="mx-auto w-full max-w-4xl p-4">
             <div class="mb-6">
                 <h1 class="text-2xl font-semibold tracking-tight">Editar compra</h1>
-                <p class="mt-1 text-sm text-muted-foreground">Modifica los datos de la compra <span class="font-mono">{{ purchase.folio }}</span>.</p>
+                <p class="mt-1 text-sm text-muted-foreground">
+                    Modifica los datos de la compra <span class="font-mono">{{ purchase.folio }}</span
+                    >.
+                </p>
             </div>
 
             <form @submit.prevent="submit" class="space-y-5">
@@ -127,12 +127,7 @@ const submit = () => {
 
                         <div class="space-y-2">
                             <Label for="purchase_date">Fecha</Label>
-                            <Input
-                                id="purchase_date"
-                                v-model="form.purchase_date"
-                                type="date"
-                                required
-                            />
+                            <Input id="purchase_date" v-model="form.purchase_date" type="date" required />
                             <p v-if="form.errors.purchase_date" class="text-sm text-destructive">{{ form.errors.purchase_date }}</p>
                         </div>
 
@@ -165,40 +160,20 @@ const submit = () => {
                         >
                             <div class="space-y-1.5">
                                 <Label :for="`product-${index}`" class="text-xs">Producto</Label>
-                                <Select
-                                    :id="`product-${index}`"
-                                    v-model="item.product_id"
-                                    required
-                                    @update:model-value="onProductChange(index)"
-                                >
+                                <Select :id="`product-${index}`" v-model="item.product_id" required @update:model-value="onProductChange(index)">
                                     <option value="" disabled>Selecciona...</option>
-                                    <option v-for="p in products" :key="p.id" :value="p.id">
-                                        {{ p.name }} ({{ p.sku }})
-                                    </option>
+                                    <option v-for="p in products" :key="p.id" :value="p.id">{{ p.name }} ({{ p.sku }})</option>
                                 </Select>
                             </div>
 
                             <div class="space-y-1.5">
                                 <Label :for="`qty-${index}`" class="text-xs">Cant.</Label>
-                                <Input
-                                    :id="`qty-${index}`"
-                                    v-model="item.quantity"
-                                    type="number"
-                                    min="1"
-                                    required
-                                />
+                                <Input :id="`qty-${index}`" v-model="item.quantity" type="number" min="1" required />
                             </div>
 
                             <div class="space-y-1.5">
                                 <Label :for="`cost-${index}`" class="text-xs">Costo</Label>
-                                <Input
-                                    :id="`cost-${index}`"
-                                    v-model="item.unit_cost"
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    required
-                                />
+                                <Input :id="`cost-${index}`" v-model="item.unit_cost" type="number" step="0.01" min="0" required />
                             </div>
 
                             <div class="space-y-1.5">

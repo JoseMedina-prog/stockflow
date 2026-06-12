@@ -9,10 +9,10 @@ import { Input } from '@/components/ui/input';
 import { Pagination } from '@/components/ui/pagination';
 import { Select } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatCurrency } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { formatCurrency } from '@/composables/useFormat';
 import { Package, Pencil, Plus, Search, Trash2, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
@@ -103,10 +103,7 @@ const handleDelete = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Productos"
-                description="Gestiona el catálogo de productos y su inventario."
-            >
+            <PageHeader title="Productos" description="Gestiona el catálogo de productos y su inventario.">
                 <template #actions>
                     <Button as-child>
                         <Link :href="route('products.create')">
@@ -120,12 +117,7 @@ const handleDelete = () => {
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <div class="relative flex-1">
                     <Search class="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-                    <Input
-                        v-model="searchInput"
-                        placeholder="Buscar por nombre o SKU..."
-                        class="pl-9"
-                        @keyup.enter="applyFilters"
-                    />
+                    <Input v-model="searchInput" placeholder="Buscar por nombre o SKU..." class="pl-9" @keyup.enter="applyFilters" />
                 </div>
                 <Select
                     :model-value="categoryId"
@@ -184,12 +176,7 @@ const handleDelete = () => {
                                             <Pencil />
                                         </Link>
                                     </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        class="text-destructive hover:text-destructive"
-                                        @click="askDelete(product)"
-                                    >
+                                    <Button variant="ghost" size="icon" class="text-destructive hover:text-destructive" @click="askDelete(product)">
                                         <Trash2 />
                                     </Button>
                                 </div>
@@ -204,12 +191,7 @@ const handleDelete = () => {
                     description="Agrega tu primer producto para empezar a vender."
                     :action="{ label: 'Nuevo producto', href: route('products.create') }"
                 />
-                <EmptyState
-                    v-else
-                    :icon="Search"
-                    title="Sin resultados"
-                    description="No encontramos productos con los filtros aplicados."
-                />
+                <EmptyState v-else :icon="Search" title="Sin resultados" description="No encontramos productos con los filtros aplicados." />
             </div>
 
             <Pagination v-if="products.data.length > 0" :links="products.links" />

@@ -4,10 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
+import { formatCurrency } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { formatCurrency } from '@/composables/useFormat';
 import { Loader2, Plus, Trash2 } from 'lucide-vue-next';
 import { computed } from 'vue';
 
@@ -52,9 +52,12 @@ const today = new Date().toISOString().slice(0, 16);
 const form = useForm({
     customer_id: '' as string,
     sale_date: today,
-    items: [
-        { product_id: '' as string, quantity: 1, price: 0, tax_id: '' as string },
-    ] as Array<{ product_id: string; quantity: number; price: number; tax_id: string }>,
+    items: [{ product_id: '' as string, quantity: 1, price: 0, tax_id: '' as string }] as Array<{
+        product_id: string;
+        quantity: number;
+        price: number;
+        tax_id: string;
+    }>,
 });
 
 const addItem = () => {
@@ -66,11 +69,9 @@ const removeItem = (index: number) => {
     if (form.items.length === 0) addItem();
 };
 
-const getProduct = (id: string): ProductOption | undefined =>
-    props.products.find((p) => String(p.id) === String(id));
+const getProduct = (id: string): ProductOption | undefined => props.products.find((p) => String(p.id) === String(id));
 
-const getTax = (id: string): TaxOption | undefined =>
-    props.taxes.find((t) => String(t.id) === String(id));
+const getTax = (id: string): TaxOption | undefined => props.taxes.find((t) => String(t.id) === String(id));
 
 const onProductChange = (index: number) => {
     const product = getProduct(form.items[index].product_id);
@@ -91,13 +92,9 @@ const taxAmountOf = (item: { product_id: string; quantity: number; price: number
     return Math.round(subtotalOf(item) * tax.rate * 100) / 100;
 };
 
-const subtotal = computed(() =>
-    Math.round(form.items.reduce((acc, item) => acc + subtotalOf(item), 0) * 100) / 100,
-);
+const subtotal = computed(() => Math.round(form.items.reduce((acc, item) => acc + subtotalOf(item), 0) * 100) / 100);
 
-const taxesTotal = computed(() =>
-    Math.round(form.items.reduce((acc, item) => acc + taxAmountOf(item), 0) * 100) / 100,
-);
+const taxesTotal = computed(() => Math.round(form.items.reduce((acc, item) => acc + taxAmountOf(item), 0) * 100) / 100);
 
 const total = computed(() => Math.round((subtotal.value + taxesTotal.value) * 100) / 100);
 
@@ -136,12 +133,7 @@ const submit = () => {
 
                         <div class="space-y-2">
                             <Label for="sale_date">Fecha y hora</Label>
-                            <Input
-                                id="sale_date"
-                                v-model="form.sale_date"
-                                type="datetime-local"
-                                required
-                            />
+                            <Input id="sale_date" v-model="form.sale_date" type="datetime-local" required />
                         </div>
                     </CardContent>
                 </Card>
@@ -162,19 +154,9 @@ const submit = () => {
                         >
                             <div class="space-y-1.5">
                                 <Label :for="`product-${index}`" class="text-xs">Producto</Label>
-                                <Select
-                                    :id="`product-${index}`"
-                                    v-model="item.product_id"
-                                    required
-                                    @update:model-value="onProductChange(index)"
-                                >
+                                <Select :id="`product-${index}`" v-model="item.product_id" required @update:model-value="onProductChange(index)">
                                     <option value="" disabled>Selecciona...</option>
-                                    <option
-                                        v-for="p in products"
-                                        :key="p.id"
-                                        :value="p.id"
-                                        :disabled="p.stock === 0"
-                                    >
+                                    <option v-for="p in products" :key="p.id" :value="p.id" :disabled="p.stock === 0">
                                         {{ p.name }} ({{ p.sku }}) — stock: {{ p.stock }}
                                     </option>
                                 </Select>
@@ -188,34 +170,19 @@ const submit = () => {
 
                             <div class="space-y-1.5">
                                 <Label :for="`qty-${index}`" class="text-xs">Cant.</Label>
-                                <Input
-                                    :id="`qty-${index}`"
-                                    v-model.number="item.quantity"
-                                    type="number"
-                                    min="1"
-                                    required
-                                />
+                                <Input :id="`qty-${index}`" v-model.number="item.quantity" type="number" min="1" required />
                             </div>
 
                             <div class="space-y-1.5">
                                 <Label :for="`price-${index}`" class="text-xs">Precio</Label>
-                                <Input
-                                    :id="`price-${index}`"
-                                    v-model.number="item.price"
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    required
-                                />
+                                <Input :id="`price-${index}`" v-model.number="item.price" type="number" step="0.01" min="0" required />
                             </div>
 
                             <div class="space-y-1.5">
                                 <Label :for="`tax-${index}`" class="text-xs">Impuesto</Label>
                                 <Select :id="`tax-${index}`" v-model="item.tax_id">
                                     <option value="">Sin impuesto</option>
-                                    <option v-for="t in taxes" :key="t.id" :value="t.id">
-                                        {{ t.code }} — {{ t.percent }}%
-                                    </option>
+                                    <option v-for="t in taxes" :key="t.id" :value="t.id">{{ t.code }} — {{ t.percent }}%</option>
                                 </Select>
                             </div>
 
@@ -224,7 +191,7 @@ const submit = () => {
                                 <div class="flex h-9 items-center rounded-md border border-input bg-muted/40 px-3 text-sm tabular-nums">
                                     {{ formatCurrency(subtotalOf(item)) }}
                                 </div>
-                                <p v-if="taxAmountOf(item) > 0" class="text-xs text-muted-foreground tabular-nums">
+                                <p v-if="taxAmountOf(item) > 0" class="text-xs tabular-nums text-muted-foreground">
                                     + {{ formatCurrency(taxAmountOf(item)) }} imp.
                                 </p>
                             </div>

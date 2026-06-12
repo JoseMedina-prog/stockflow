@@ -44,13 +44,7 @@ const path = computed(() => {
 </script>
 
 <template>
-    <svg
-        :width="width"
-        :height="height"
-        :viewBox="`0 0 ${width} ${height}`"
-        class="overflow-visible"
-        preserveAspectRatio="none"
-    >
+    <svg :width="width" :height="height" :viewBox="`0 0 ${width} ${height}`" class="overflow-visible" preserveAspectRatio="none">
         <path :d="path.area" :class="fillClass" stroke="none" />
         <path :d="path.line" :class="strokeClass" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
     </svg>

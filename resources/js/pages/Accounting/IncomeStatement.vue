@@ -4,8 +4,8 @@ import EmptyState from '@/components/stockflow/EmptyState.vue';
 import PageHeader from '@/components/stockflow/PageHeader.vue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency } from '@/composables/useFormat';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { FileSpreadsheet } from 'lucide-vue-next';
@@ -29,14 +29,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Estado de resultados"
-                description="Ingresos, egresos y utilidad del ejercicio."
-            >
+            <PageHeader title="Estado de resultados" description="Ingresos, egresos y utilidad del ejercicio.">
                 <template #actions>
-                    <Link :href="route('accounting.index')" class="text-sm text-muted-foreground hover:underline">
-                        ← Volver al resumen
-                    </Link>
+                    <Link :href="route('accounting.index')" class="text-sm text-muted-foreground hover:underline"> ← Volver al resumen </Link>
                 </template>
             </PageHeader>
 

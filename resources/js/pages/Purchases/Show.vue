@@ -7,11 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AppLayout from '@/layouts/AppLayout.vue';
+import { formatCurrency, formatDateTime } from '@/composables/useFormat';
 import { usePermissions } from '@/composables/usePermissions';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { formatCurrency, formatDateTime } from '@/composables/useFormat';
 import { ArrowLeft, Check, CreditCard, Mail, Pencil, Phone, Trash2, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 
@@ -97,24 +97,32 @@ const handleDelete = () => {
 
 const handleReceive = () => {
     processing.value = true;
-    router.post(route('purchases.receive', props.purchase.id), {}, {
-        preserveScroll: true,
-        onFinish: () => {
-            processing.value = false;
-            receiveOpen.value = false;
+    router.post(
+        route('purchases.receive', props.purchase.id),
+        {},
+        {
+            preserveScroll: true,
+            onFinish: () => {
+                processing.value = false;
+                receiveOpen.value = false;
+            },
         },
-    });
+    );
 };
 
 const handleCancel = () => {
     processing.value = true;
-    router.post(route('purchases.cancel', props.purchase.id), {}, {
-        preserveScroll: true,
-        onFinish: () => {
-            processing.value = false;
-            cancelOpen.value = false;
+    router.post(
+        route('purchases.cancel', props.purchase.id),
+        {},
+        {
+            preserveScroll: true,
+            onFinish: () => {
+                processing.value = false;
+                cancelOpen.value = false;
+            },
         },
-    });
+    );
 };
 
 const voidPayment = (paymentId: number) => {
@@ -150,28 +158,15 @@ const voidPayment = (paymentId: number) => {
                                 Editar
                             </Link>
                         </Button>
-                        <Button
-                            v-if="purchase.can_receive"
-                            @click="receiveOpen = true"
-                        >
+                        <Button v-if="purchase.can_receive" @click="receiveOpen = true">
                             <Check class="mr-1" />
                             Marcar como recibida
                         </Button>
-                        <Button
-                            v-if="purchase.can_cancel"
-                            variant="outline"
-                            class="text-destructive"
-                            @click="cancelOpen = true"
-                        >
+                        <Button v-if="purchase.can_cancel" variant="outline" class="text-destructive" @click="cancelOpen = true">
                             <X class="mr-1" />
                             Cancelar
                         </Button>
-                        <Button
-                            v-if="purchase.can_delete"
-                            variant="ghost"
-                            class="text-destructive hover:text-destructive"
-                            @click="deleteOpen = true"
-                        >
+                        <Button v-if="purchase.can_delete" variant="ghost" class="text-destructive hover:text-destructive" @click="deleteOpen = true">
                             <Trash2 />
                         </Button>
                     </template>
@@ -275,10 +270,7 @@ const voidPayment = (paymentId: number) => {
                             </div>
                             <div class="flex w-64 justify-between border-t pt-1">
                                 <span class="font-semibold">Saldo</span>
-                                <span
-                                    class="font-semibold tabular-nums"
-                                    :class="purchase.balance > 0 ? 'text-destructive' : ''"
-                                >
+                                <span class="font-semibold tabular-nums" :class="purchase.balance > 0 ? 'text-destructive' : ''">
                                     {{ formatCurrency(purchase.balance) }}
                                 </span>
                             </div>

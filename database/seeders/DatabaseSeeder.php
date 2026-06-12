@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\User;
+use App\Support\FolioGenerator;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -60,6 +61,7 @@ class DatabaseSeeder extends Seeder
             $adminId = $admin->id;
             foreach ($customers->take(6) as $customer) {
                 $sale = Sale::create([
+                    'folio' => FolioGenerator::nextSaleFolio(),
                     'user_id' => $adminId,
                     'customer_id' => $customer->id,
                     'total' => 0,
@@ -95,6 +97,10 @@ class DatabaseSeeder extends Seeder
             $this->call(PurchaseSeeder::class);
 
             $this->call(BusinessSettingsSeeder::class);
+
+            $this->call(SaleReturnSeeder::class);
+
+            $this->call(PaymentSeeder::class);
         });
     }
 }

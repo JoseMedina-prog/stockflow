@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import ConfirmDialog from '@/components/stockflow/ConfirmDialog.vue';
-import PageHeader from '@/components/stockflow/PageHeader.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { usePermissions } from '@/composables/usePermissions';
 import { formatCurrency, formatDate, formatDateTime } from '@/composables/useFormat';
+import { usePermissions } from '@/composables/usePermissions';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ArrowLeft, Check, CheckCircle, Edit, FileText, Mail, Phone, Printer, Send, ShoppingCart, Trash2, X } from 'lucide-vue-next';
+import { ArrowLeft, Check, CheckCircle, Edit, Mail, Phone, Printer, Send, ShoppingCart, Trash2, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 interface QuoteData {
@@ -159,7 +158,10 @@ const handlePrint = () => {
                 </div>
             </div>
 
-            <div v-if="quote.status === 'accepted'" class="mb-5 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-200">
+            <div
+                v-if="quote.status === 'accepted'"
+                class="mb-5 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-200"
+            >
                 <p class="flex items-center gap-2 font-medium">
                     <CheckCircle class="size-4" />
                     Cotización aceptada por el cliente
@@ -167,7 +169,10 @@ const handlePrint = () => {
                 <p v-if="quote.accepted_at" class="mt-1 text-xs">Aceptada el {{ formatDateTime(quote.accepted_at) }}.</p>
             </div>
 
-            <div v-if="quote.converted_sale_id" class="mb-5 rounded-lg border border-teal-200 bg-teal-50 p-4 text-sm text-teal-900 dark:border-teal-900/50 dark:bg-teal-950/30 dark:text-teal-200">
+            <div
+                v-if="quote.converted_sale_id"
+                class="mb-5 rounded-lg border border-teal-200 bg-teal-50 p-4 text-sm text-teal-900 dark:border-teal-900/50 dark:bg-teal-950/30 dark:text-teal-200"
+            >
                 <p class="flex items-center gap-2 font-medium">
                     <CheckCircle class="size-4" />
                     Convertida en venta
@@ -193,9 +198,7 @@ const handlePrint = () => {
                         <p v-if="quote.customer?.phone" class="flex items-center gap-1.5 text-xs text-muted-foreground">
                             <Phone class="size-3" /> {{ quote.customer.phone }}
                         </p>
-                        <Link v-if="quote.customer" :href="route('customers.index')" class="text-xs hover:underline">
-                            Ver ficha del cliente →
-                        </Link>
+                        <Link v-if="quote.customer" :href="route('customers.index')" class="text-xs hover:underline"> Ver ficha del cliente → </Link>
                     </CardContent>
                 </Card>
 
@@ -291,11 +294,15 @@ const handlePrint = () => {
             <div v-if="quote.notes || quote.terms" class="mt-5 grid gap-5 md:grid-cols-2">
                 <Card v-if="quote.notes">
                     <CardHeader><CardTitle class="text-base">Notas</CardTitle></CardHeader>
-                    <CardContent><p class="whitespace-pre-line text-sm">{{ quote.notes }}</p></CardContent>
+                    <CardContent
+                        ><p class="whitespace-pre-line text-sm">{{ quote.notes }}</p></CardContent
+                    >
                 </Card>
                 <Card v-if="quote.terms">
                     <CardHeader><CardTitle class="text-base">Términos y condiciones</CardTitle></CardHeader>
-                    <CardContent><p class="whitespace-pre-line text-sm">{{ quote.terms }}</p></CardContent>
+                    <CardContent
+                        ><p class="whitespace-pre-line text-sm">{{ quote.terms }}</p></CardContent
+                    >
                 </Card>
             </div>
         </div>

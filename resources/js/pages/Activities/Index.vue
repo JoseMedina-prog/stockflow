@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Pagination } from '@/components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatDateTime } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { formatDateTime } from '@/composables/useFormat';
 import { Activity, Search, Trash2, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
@@ -34,7 +34,10 @@ interface PaginatedActivities {
     links: { url: string | null; label: string; active: boolean }[];
 }
 
-interface TypeOption { value: string; label: string; }
+interface TypeOption {
+    value: string;
+    label: string;
+}
 
 const props = defineProps<{
     activities: PaginatedActivities;
@@ -114,20 +117,12 @@ const handleDelete = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Actividades"
-                description="Registro global de llamadas, correos, reuniones, notas y mensajes."
-            />
+            <PageHeader title="Actividades" description="Registro global de llamadas, correos, reuniones, notas y mensajes." />
 
             <div class="flex flex-wrap items-end gap-2">
                 <div class="relative min-w-[200px] flex-1">
                     <Search class="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-                    <Input
-                        v-model="searchInput"
-                        placeholder="Buscar en descripción o resultado..."
-                        class="pl-9"
-                        @keyup.enter="applyFilters"
-                    />
+                    <Input v-model="searchInput" placeholder="Buscar en descripción o resultado..." class="pl-9" @keyup.enter="applyFilters" />
                 </div>
 
                 <div class="flex flex-col gap-1">
@@ -173,9 +168,7 @@ const handleDelete = () => {
                             </TableCell>
                             <TableCell>
                                 <div class="font-medium">{{ a.description ?? '—' }}</div>
-                                <div v-if="a.outcome" class="mt-0.5 text-xs text-emerald-600 dark:text-emerald-400">
-                                    → {{ a.outcome }}
-                                </div>
+                                <div v-if="a.outcome" class="mt-0.5 text-xs text-emerald-600 dark:text-emerald-400">→ {{ a.outcome }}</div>
                             </TableCell>
                             <TableCell>
                                 <Link v-if="a.subject_href" :href="a.subject_href" class="text-xs hover:underline">
@@ -187,12 +180,7 @@ const handleDelete = () => {
                             <TableCell class="text-muted-foreground">{{ a.user?.name ?? '—' }}</TableCell>
                             <TableCell class="text-xs text-muted-foreground">{{ formatDateTime(a.occurred_at) }}</TableCell>
                             <TableCell class="text-right">
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    class="text-destructive hover:text-destructive"
-                                    @click="askDelete(a)"
-                                >
+                                <Button variant="ghost" size="icon" class="text-destructive hover:text-destructive" @click="askDelete(a)">
                                     <Trash2 class="size-4" />
                                 </Button>
                             </TableCell>
@@ -205,12 +193,7 @@ const handleDelete = () => {
                     title="Sin actividades"
                     description="Las llamadas, correos y reuniones registradas aparecerán aquí."
                 />
-                <EmptyState
-                    v-else
-                    :icon="Search"
-                    title="Sin resultados"
-                    description="No encontramos actividades con ese criterio."
-                />
+                <EmptyState v-else :icon="Search" title="Sin resultados" description="No encontramos actividades con ese criterio." />
             </div>
 
             <Pagination v-if="activities.data.length > 0" :links="activities.links" />

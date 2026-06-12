@@ -12,6 +12,7 @@ use App\Models\SaleItem;
 use App\Models\Tax;
 use App\Services\PostingService;
 use App\Services\StockLedger;
+use App\Support\FolioGenerator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -40,6 +41,7 @@ class SaleController extends Controller
             ->withQueryString()
             ->through(fn (Sale $sale) => [
                 'id' => $sale->id,
+                'folio' => $sale->folio,
                 'sale_date' => $sale->sale_date->toDateTimeString(),
                 'total' => (float) $sale->total,
                 'items_count' => $sale->items_count,
@@ -136,6 +138,7 @@ class SaleController extends Controller
             $total = round($subtotal + $taxesTotal, 2);
 
             $sale = Sale::create([
+                'folio' => FolioGenerator::nextSaleFolio(),
                 'user_id' => $request->user()->id,
                 'customer_id' => $request->customer_id,
                 'sale_date' => $request->sale_date,
@@ -189,6 +192,7 @@ class SaleController extends Controller
         return Inertia::render('Sales/Show', [
             'sale' => [
                 'id' => $sale->id,
+                'folio' => $sale->folio,
                 'sale_date' => $sale->sale_date->toDateTimeString(),
                 'subtotal' => (float) $sale->items->sum(fn ($i) => (float) $i->subtotal),
                 'tax' => (float) $sale->items->sum(fn ($i) => (float) $i->tax_amount),

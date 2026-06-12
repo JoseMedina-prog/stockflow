@@ -4,11 +4,10 @@ import PageHeader from '@/components/stockflow/PageHeader.vue';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency } from '@/composables/useFormat';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
-import { Landmark } from 'lucide-vue-next';
 
 defineProps<{
     assets: Array<{ id: number; code: string; name: string; balance: number }>;
@@ -31,14 +30,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Balance general"
-                description="Estado de situación financiera al cierre del periodo."
-            >
+            <PageHeader title="Balance general" description="Estado de situación financiera al cierre del periodo.">
                 <template #actions>
-                    <Link :href="route('accounting.index')" class="text-sm text-muted-foreground hover:underline">
-                        ← Volver al resumen
-                    </Link>
+                    <Link :href="route('accounting.index')" class="text-sm text-muted-foreground hover:underline"> ← Volver al resumen </Link>
                 </template>
             </PageHeader>
 
@@ -47,7 +41,7 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div class="grid gap-4 lg:grid-cols-2">
                 <Card>
                     <CardHeader>
-                        <CardTitle class="text-base flex items-center gap-2">
+                        <CardTitle class="flex items-center gap-2 text-base">
                             Activo
                             <Badge variant="secondary">{{ formatCurrency(totals.assets) }}</Badge>
                         </CardTitle>
@@ -75,7 +69,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
                 <Card>
                     <CardHeader>
-                        <CardTitle class="text-base flex items-center gap-2">
+                        <CardTitle class="flex items-center gap-2 text-base">
                             Pasivo + Capital
                             <Badge variant="secondary">{{ formatCurrency(totals.liabilities_plus_equity) }}</Badge>
                         </CardTitle>
@@ -108,7 +102,10 @@ const breadcrumbs: BreadcrumbItem[] = [
                                         <div class="text-xs text-muted-foreground">Utilidad del ejercicio</div>
                                         <div class="font-medium">Resultado del periodo</div>
                                     </TableCell>
-                                    <TableCell class="text-right font-semibold tabular-nums" :class="netIncome < 0 ? 'text-destructive' : 'text-emerald-600'">
+                                    <TableCell
+                                        class="text-right font-semibold tabular-nums"
+                                        :class="netIncome < 0 ? 'text-destructive' : 'text-emerald-600'"
+                                    >
                                         {{ formatCurrency(netIncome) }}
                                     </TableCell>
                                 </TableRow>

@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3';
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { useCommandPalette } from '@/composables/useCommandPalette';
 import { formatCurrency, formatDateTime } from '@/composables/useFormat';
-import {
-    Dialog,
-    DialogContent,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
+import { router } from '@inertiajs/vue3';
 import { ArrowLeftRight, CreditCard, Loader2, Package, Receipt, Search, ShoppingBag, Truck, Undo2, User } from 'lucide-vue-next';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 interface ProductHit {
     id: number;
@@ -228,10 +225,7 @@ const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigat
 
 <template>
     <Dialog :open="isOpen" @update:open="handleOpenChange">
-        <DialogContent
-            class="max-w-xl gap-0 overflow-hidden border-0 bg-popover p-0 shadow-2xl"
-            :show-close-button="false"
-        >
+        <DialogContent class="max-w-xl gap-0 overflow-hidden border-0 bg-popover p-0 shadow-2xl" :show-close-button="false">
             <div class="flex items-center gap-3 border-b border-border/60 px-4">
                 <Search class="size-4 shrink-0 text-muted-foreground" />
                 <Input
@@ -241,15 +235,16 @@ const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigat
                     autofocus
                 />
                 <Loader2 v-if="loading" class="size-4 animate-spin text-muted-foreground" />
-                <kbd class="hidden items-center gap-1 rounded border border-border/60 bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:inline-flex">
-                    <span>{{ isMac ? '⌘' : 'Ctrl' }}</span>K
+                <kbd
+                    class="hidden items-center gap-1 rounded border border-border/60 bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:inline-flex"
+                >
+                    <span>{{ isMac ? '⌘' : 'Ctrl' }}</span
+                    >K
                 </kbd>
             </div>
 
             <div class="max-h-[420px] overflow-y-auto py-2">
-                <p v-if="showHint" class="px-4 py-12 text-center text-sm text-muted-foreground">
-                    Escribe al menos 2 caracteres para buscar.
-                </p>
+                <p v-if="showHint" class="px-4 py-12 text-center text-sm text-muted-foreground">Escribe al menos 2 caracteres para buscar.</p>
 
                 <p v-else-if="!hasResults && !loading && query.length >= 2" class="px-4 py-12 text-center text-sm text-muted-foreground">
                     Sin resultados para «{{ query }}».
@@ -274,9 +269,7 @@ const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigat
                                     {{ p.sku }}<span v-if="p.category"> · {{ p.category }}</span>
                                 </p>
                             </div>
-                            <span class="shrink-0 text-xs tabular-nums text-muted-foreground">
-                                {{ p.stock }} und
-                            </span>
+                            <span class="shrink-0 text-xs tabular-nums text-muted-foreground"> {{ p.stock }} und </span>
                         </button>
                     </div>
 
@@ -425,13 +418,9 @@ const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigat
                                     {{ m.product ?? '—' }}
                                     <span class="ml-1 text-xs text-muted-foreground">{{ m.sku }}</span>
                                 </p>
-                                <p class="truncate text-xs text-muted-foreground">
-                                    {{ m.type_label }} · {{ m.reason ?? '—' }}
-                                </p>
+                                <p class="truncate text-xs text-muted-foreground">{{ m.type_label }} · {{ m.reason ?? '—' }}</p>
                             </div>
-                            <span class="shrink-0 text-xs tabular-nums text-muted-foreground">
-                                {{ m.quantity }} und
-                            </span>
+                            <span class="shrink-0 text-xs tabular-nums text-muted-foreground"> {{ m.quantity }} und </span>
                         </button>
                     </div>
                 </template>

@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency } from '@/composables/useFormat';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ArrowLeft, Loader2, Plus, Search, Trash2 } from 'lucide-vue-next';
@@ -83,9 +83,7 @@ const form = useForm<{
     status: props.defaults.status,
     notes: '',
     terms: 'Precios en MXN. Vigencia de la cotización según la fecha indicada. Una vez aceptada, se requiere anticipo del 50% para iniciar el pedido.',
-    items: [
-        { product_id: null, description: '', quantity: 1, price: 0, discount_percent: 0 },
-    ],
+    items: [{ product_id: null, description: '', quantity: 1, price: 0, discount_percent: 0 }],
 });
 
 const productSearch = ref('');
@@ -93,9 +91,7 @@ const productSearch = ref('');
 const filteredProducts = computed(() => {
     const s = productSearch.value.toLowerCase().trim();
     if (!s) return props.products.slice(0, 50);
-    return props.products
-        .filter(p => p.name.toLowerCase().includes(s) || p.sku.toLowerCase().includes(s))
-        .slice(0, 50);
+    return props.products.filter((p) => p.name.toLowerCase().includes(s) || p.sku.toLowerCase().includes(s)).slice(0, 50);
 });
 
 const lineTotal = (item: QuoteFormItem) => {
@@ -104,9 +100,7 @@ const lineTotal = (item: QuoteFormItem) => {
     return Math.max(0, sub - disc);
 };
 
-const subtotal = computed(() =>
-    form.items.reduce((acc, it) => acc + lineTotal(it), 0),
-);
+const subtotal = computed(() => form.items.reduce((acc, it) => acc + lineTotal(it), 0));
 const total = computed(() => Math.max(0, subtotal.value - form.discount + form.tax));
 
 const addItem = () => {
@@ -163,20 +157,18 @@ const submit = () => {
                 <div class="grid gap-4 md:grid-cols-3">
                     <div class="space-y-2">
                         <Label for="customer_id">Cliente</Label>
-                        <select id="customer_id" v-model="form.customer_id" class="flex h-9 w-full rounded-md border border-input bg-background px-2 text-sm">
+                        <select
+                            id="customer_id"
+                            v-model="form.customer_id"
+                            class="flex h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+                        >
                             <option :value="null">Consumidor final / sin cliente</option>
                             <option v-for="c in customers" :key="c.id" :value="c.id">{{ c.name }}</option>
                         </select>
                     </div>
                     <div class="space-y-2">
                         <Label for="opportunity_id">Oportunidad (opcional)</Label>
-                        <Input
-                            id="opportunity_id"
-                            v-model.number="form.opportunity_id"
-                            type="number"
-                            min="0"
-                            placeholder="ID de oportunidad"
-                        />
+                        <Input id="opportunity_id" v-model.number="form.opportunity_id" type="number" min="0" placeholder="ID de oportunidad" />
                         <p v-if="opportunity && form.opportunity_id === opportunity.id" class="text-xs text-muted-foreground">
                             Origen: {{ opportunity.name }}
                         </p>
@@ -225,10 +217,7 @@ const submit = () => {
                             <TableRow v-for="(item, idx) in form.items" :key="idx">
                                 <TableCell>
                                     <div class="space-y-1">
-                                        <Input
-                                            v-model="item.description"
-                                            placeholder="Descripción libre o nombre del producto"
-                                        />
+                                        <Input v-model="item.description" placeholder="Descripción libre o nombre del producto" />
                                         <details class="text-xs text-muted-foreground">
                                             <summary class="cursor-pointer">Elegir producto del catálogo</summary>
                                             <div class="relative mt-1.5">
@@ -249,9 +238,7 @@ const submit = () => {
                                                 </button>
                                             </div>
                                         </details>
-                                        <p v-if="item.product_id" class="text-xs text-muted-foreground">
-                                            Catálogo #{{ item.product_id }}
-                                        </p>
+                                        <p v-if="item.product_id" class="text-xs text-muted-foreground">Catálogo #{{ item.product_id }}</p>
                                     </div>
                                 </TableCell>
                                 <TableCell>
@@ -261,7 +248,14 @@ const submit = () => {
                                     <Input v-model.number="item.price" type="number" min="0" step="0.01" class="h-9 text-right" />
                                 </TableCell>
                                 <TableCell>
-                                    <Input v-model.number="item.discount_percent" type="number" min="0" max="100" step="0.01" class="h-9 text-right" />
+                                    <Input
+                                        v-model.number="item.discount_percent"
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        step="0.01"
+                                        class="h-9 text-right"
+                                    />
                                 </TableCell>
                                 <TableCell class="text-right font-semibold tabular-nums">
                                     {{ formatCurrency(lineTotal(item)) }}

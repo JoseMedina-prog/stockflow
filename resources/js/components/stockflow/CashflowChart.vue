@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { formatCurrency } from '@/composables/useFormat';
+import { computed } from 'vue';
 
 interface ChartPoint {
     date: string;
@@ -91,7 +91,7 @@ const xForCenter = (i: number) => padding.left + (innerWidth / props.data.length
                 :y="yForTick(tick) + 4"
                 text-anchor="end"
                 fill="hsl(var(--muted-foreground))"
-                style="font-size: 11px; font-weight: 500; font-family: inherit;"
+                style="font-size: 11px; font-weight: 500; font-family: inherit"
             >
                 {{ formatCurrency(tick).replace('.00', '') }}
             </text>
@@ -137,7 +137,7 @@ const xForCenter = (i: number) => padding.left + (innerWidth / props.data.length
                 :y="height - 10"
                 text-anchor="middle"
                 fill="hsl(var(--muted-foreground))"
-                style="font-size: 11px; font-weight: 500; font-family: inherit;"
+                style="font-size: 11px; font-weight: 500; font-family: inherit"
             >
                 {{ d.label }}
             </text>

@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { useFlashToasts } from '@/composables/useFlashToasts';
-
-useFlashToasts();
+import FlashToast from '@/components/stockflow/FlashToast.vue';
 </script>
 
 <template>
+    <FlashToast />
     <slot />
 </template>

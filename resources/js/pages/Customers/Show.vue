@@ -8,17 +8,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { usePermissions } from '@/composables/usePermissions';
 import { formatCurrency, formatDate, formatDateTime } from '@/composables/useFormat';
+import { usePermissions } from '@/composables/usePermissions';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import {
     ArrowLeft,
     CalendarClock,
-    CircleDollarSign,
     Clock,
-    CreditCard,
     Edit,
     FileText,
     Mail,
@@ -31,7 +29,6 @@ import {
     Target,
     Ticket,
     TrendingUp,
-    Undo2,
     UserPlus,
     Wallet,
 } from 'lucide-vue-next';
@@ -264,9 +261,7 @@ const daysSinceLastPurchase = (): string => {
                             <MapPin class="mt-0.5 size-4 shrink-0 text-muted-foreground" />
                             <span>{{ customer.address }}</span>
                         </div>
-                        <p v-if="!customer.email && !customer.phone && !customer.address" class="text-muted-foreground">
-                            Sin datos de contacto.
-                        </p>
+                        <p v-if="!customer.email && !customer.phone && !customer.address" class="text-muted-foreground">Sin datos de contacto.</p>
                         <Separator />
                         <div class="grid grid-cols-2 gap-3 text-xs">
                             <div>
@@ -302,7 +297,10 @@ const daysSinceLastPurchase = (): string => {
                         </Button>
                     </CardHeader>
                     <CardContent>
-                        <div v-if="recentSales.length === 0" class="rounded-md border border-dashed border-border/60 p-6 text-center text-sm text-muted-foreground">
+                        <div
+                            v-if="recentSales.length === 0"
+                            class="rounded-md border border-dashed border-border/60 p-6 text-center text-sm text-muted-foreground"
+                        >
                             <Receipt class="mx-auto mb-2 size-8 opacity-50" />
                             Aún no hay ventas registradas.
                         </div>
@@ -476,7 +474,10 @@ const daysSinceLastPurchase = (): string => {
                         <CardDescription>Últimas {{ activities.length }} actividades registradas.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div v-if="activities.length === 0" class="rounded-md border border-dashed border-border/60 p-6 text-center text-sm text-muted-foreground">
+                        <div
+                            v-if="activities.length === 0"
+                            class="rounded-md border border-dashed border-border/60 p-6 text-center text-sm text-muted-foreground"
+                        >
                             <FileText class="mx-auto mb-2 size-8 opacity-50" />
                             Sin actividades registradas.
                         </div>

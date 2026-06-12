@@ -4,8 +4,8 @@ import EmptyState from '@/components/stockflow/EmptyState.vue';
 import PageHeader from '@/components/stockflow/PageHeader.vue';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency } from '@/composables/useFormat';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { Scale } from 'lucide-vue-next';
@@ -28,14 +28,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Balance de prueba"
-                description="Saldos de las cuentas de balance (Activo, Pasivo, Capital) en el periodo."
-            >
+            <PageHeader title="Balance de prueba" description="Saldos de las cuentas de balance (Activo, Pasivo, Capital) en el periodo.">
                 <template #actions>
-                    <Link :href="route('accounting.index')" class="text-sm text-muted-foreground hover:underline">
-                        ← Volver al resumen
-                    </Link>
+                    <Link :href="route('accounting.index')" class="text-sm text-muted-foreground hover:underline"> ← Volver al resumen </Link>
                 </template>
             </PageHeader>
 
@@ -68,12 +63,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                             </TableRow>
                         </TableBody>
                     </Table>
-                    <EmptyState
-                        v-else
-                        :icon="Scale"
-                        title="Sin saldos"
-                        description="No hay cuentas con movimientos en el periodo."
-                    />
+                    <EmptyState v-else :icon="Scale" title="Sin saldos" description="No hay cuentas con movimientos en el periodo." />
                 </CardContent>
             </Card>
         </div>

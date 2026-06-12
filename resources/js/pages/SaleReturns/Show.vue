@@ -3,14 +3,13 @@ import PageHeader from '@/components/stockflow/PageHeader.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatCurrency, formatDateTime } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, useForm } from '@inertiajs/vue3';
-import { formatCurrency, formatDateTime } from '@/composables/useFormat';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ArrowLeft, Check, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 
@@ -125,19 +124,11 @@ const handleReject = () => {
                                 Volver
                             </Link>
                         </Button>
-                        <Button
-                            v-if="saleReturn.can_approve"
-                            @click="approveOpen = true"
-                        >
+                        <Button v-if="saleReturn.can_approve" @click="approveOpen = true">
                             <Check class="mr-1" />
                             Aprobar
                         </Button>
-                        <Button
-                            v-if="saleReturn.can_reject"
-                            variant="outline"
-                            class="text-destructive"
-                            @click="rejectOpen = true"
-                        >
+                        <Button v-if="saleReturn.can_reject" variant="outline" class="text-destructive" @click="rejectOpen = true">
                             <X class="mr-1" />
                             Rechazar
                         </Button>
@@ -202,7 +193,10 @@ const handleReject = () => {
                                     {{ saleReturn.credit_note.folio }}
                                 </Link>
                                 <p class="text-xs text-muted-foreground">
-                                    Saldo: <span class="font-semibold text-foreground tabular-nums">{{ formatCurrency(saleReturn.credit_note.balance_remaining) }}</span>
+                                    Saldo:
+                                    <span class="font-semibold tabular-nums text-foreground">{{
+                                        formatCurrency(saleReturn.credit_note.balance_remaining)
+                                    }}</span>
                                 </p>
                             </div>
                         </div>
@@ -306,9 +300,7 @@ const handleReject = () => {
         <div v-if="rejectOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" @click.self="rejectOpen = false">
             <div class="w-full max-w-md rounded-lg bg-card p-6 shadow-xl">
                 <h2 class="text-lg font-semibold">Rechazar devolución</h2>
-                <p class="mt-1 text-sm text-muted-foreground">
-                    Indica el motivo del rechazo. La devolución no se puede revertir después.
-                </p>
+                <p class="mt-1 text-sm text-muted-foreground">Indica el motivo del rechazo. La devolución no se puede revertir después.</p>
                 <form @submit.prevent="handleReject" class="mt-4 space-y-4">
                     <div class="space-y-2">
                         <Label for="rejection_reason">Motivo</Label>

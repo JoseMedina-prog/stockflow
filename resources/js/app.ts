@@ -1,13 +1,13 @@
 import '../css/app.css';
 
 import { createInertiaApp } from '@inertiajs/vue3';
+
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
-import { initializeTheme } from './composables/useAppearance';
 import AppShell from './components/stockflow/AppShell.vue';
-import Toaster from './components/stockflow/Toaster.vue';
+import { initializeTheme } from './composables/useAppearance';
 
 declare module 'vite/client' {
     interface ImportMetaEnv {
@@ -30,8 +30,6 @@ createInertiaApp({
         const app = createApp({
             render: () => h(AppShell, null, () => h(App, props)),
         });
-
-        app.component('Toaster', Toaster);
 
         app.use(plugin).use(ZiggyVue);
 

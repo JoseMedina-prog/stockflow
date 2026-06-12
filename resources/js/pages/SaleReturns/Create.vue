@@ -3,11 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { formatCurrency } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { formatCurrency } from '@/composables/useFormat';
-import { ArrowLeft, Loader2, Plus, Trash2 } from 'lucide-vue-next';
+import { ArrowLeft, Loader2 } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 interface SaleItem {
@@ -65,9 +65,7 @@ const subtotalOf = (saleItemId: number, qty: number): number => {
     return Math.round(meta.unit_price * qty * 100) / 100;
 };
 
-const total = computed(() =>
-    form.items.reduce((acc, item) => acc + subtotalOf(item.sale_item_id, Number(item.quantity_returned) || 0), 0),
-);
+const total = computed(() => form.items.reduce((acc, item) => acc + subtotalOf(item.sale_item_id, Number(item.quantity_returned) || 0), 0));
 
 const maxFor = (saleItemId: number): number => itemMeta.value[saleItemId]?.returnable_quantity ?? 0;
 
@@ -159,8 +157,8 @@ const submit = () => {
                                 <div class="text-sm font-medium">{{ itemMeta[item.sale_item_id]?.product_name }}</div>
                                 <div class="font-mono text-xs text-muted-foreground">
                                     {{ itemMeta[item.sale_item_id]?.product_sku }}
-                                    · vendidos: {{ itemMeta[item.sale_item_id]?.quantity_sold }}
-                                    · ya devueltos: {{ itemMeta[item.sale_item_id]?.quantity_returned }}
+                                    · vendidos: {{ itemMeta[item.sale_item_id]?.quantity_sold }} · ya devueltos:
+                                    {{ itemMeta[item.sale_item_id]?.quantity_returned }}
                                 </div>
                             </div>
 
@@ -183,9 +181,7 @@ const submit = () => {
                             </div>
 
                             <div class="flex items-end justify-end">
-                                <div class="flex h-9 items-center text-xs text-muted-foreground">
-                                    Máx: {{ maxFor(item.sale_item_id) }}
-                                </div>
+                                <div class="flex h-9 items-center text-xs text-muted-foreground">Máx: {{ maxFor(item.sale_item_id) }}</div>
                             </div>
                         </div>
                     </CardContent>

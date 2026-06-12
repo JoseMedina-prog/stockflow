@@ -7,6 +7,7 @@ use App\Models\JournalEntry;
 use App\Models\Payment;
 use App\Models\Purchase;
 use App\Models\Quote;
+use App\Models\Sale;
 use App\Models\SaleReturn;
 use Illuminate\Support\Facades\DB;
 
@@ -17,6 +18,11 @@ class FolioGenerator
     public static function nextPurchaseFolio(): string
     {
         return self::nextFor('C-', Purchase::class);
+    }
+
+    public static function nextSaleFolio(): string
+    {
+        return self::nextFor('V-', Sale::class);
     }
 
     public static function nextReturnFolio(): string

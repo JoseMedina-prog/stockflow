@@ -6,11 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Pagination } from '@/components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatCurrency } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { formatCurrency } from '@/composables/useFormat';
-import { Eye, Pencil, Plus, Search, ShoppingBag, X } from 'lucide-vue-next';
+import { Pencil, Plus, Search, ShoppingBag, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
 interface PurchaseItem {
@@ -76,8 +76,7 @@ watch(
     },
 );
 
-const hasFilters = () =>
-    !!(props.filters.search || props.filters.supplier_id || props.filters.status || props.filters.from || props.filters.to);
+const hasFilters = () => !!(props.filters.search || props.filters.supplier_id || props.filters.status || props.filters.from || props.filters.to);
 
 const applyFilters = () => {
     router.get(
@@ -103,10 +102,7 @@ const clearFilters = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Compras"
-                description="Registra y consulta las compras a proveedores."
-            >
+            <PageHeader title="Compras" description="Registra y consulta las compras a proveedores.">
                 <template #actions>
                     <Button as-child>
                         <Link :href="route('purchases.create')">
@@ -120,21 +116,12 @@ const clearFilters = () => {
             <div class="flex flex-wrap items-end gap-2">
                 <div class="relative min-w-[200px] flex-1">
                     <Search class="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-                    <Input
-                        v-model="searchInput"
-                        placeholder="Buscar por folio o proveedor..."
-                        class="pl-9"
-                        @keyup.enter="applyFilters"
-                    />
+                    <Input v-model="searchInput" placeholder="Buscar por folio o proveedor..." class="pl-9" @keyup.enter="applyFilters" />
                 </div>
 
                 <div class="flex flex-col gap-1">
                     <label class="text-xs text-muted-foreground">Proveedor</label>
-                    <select
-                        v-model="supplierId"
-                        class="h-9 rounded-md border border-input bg-background px-2 text-sm"
-                        @change="applyFilters"
-                    >
+                    <select v-model="supplierId" class="h-9 rounded-md border border-input bg-background px-2 text-sm" @change="applyFilters">
                         <option :value="null">Todos</option>
                         <option v-for="s in suppliers" :key="s.id" :value="s.id">
                             {{ s.name }}
@@ -144,11 +131,7 @@ const clearFilters = () => {
 
                 <div class="flex flex-col gap-1">
                     <label class="text-xs text-muted-foreground">Estado</label>
-                    <select
-                        v-model="status"
-                        class="h-9 rounded-md border border-input bg-background px-2 text-sm"
-                        @change="applyFilters"
-                    >
+                    <select v-model="status" class="h-9 rounded-md border border-input bg-background px-2 text-sm" @change="applyFilters">
                         <option value="">Todos</option>
                         <option v-for="st in statuses" :key="st.value" :value="st.value">
                             {{ st.label }}
@@ -201,17 +184,7 @@ const clearFilters = () => {
                             </TableCell>
                             <TableCell class="text-right">
                                 <div class="flex justify-end gap-1">
-                                    <Button variant="ghost" size="icon" as-child>
-                                        <Link :href="route('purchases.index')">
-                                            <Eye />
-                                        </Link>
-                                    </Button>
-                                    <Button
-                                        v-if="purchase.status === 'pending'"
-                                        variant="ghost"
-                                        size="icon"
-                                        as-child
-                                    >
+                                    <Button v-if="purchase.status === 'pending'" variant="ghost" size="icon" as-child>
                                         <Link :href="route('purchases.edit', purchase.id)">
                                             <Pencil />
                                         </Link>
@@ -228,12 +201,7 @@ const clearFilters = () => {
                     description="Registra tu primera compra para empezar a gestionar tu inventario."
                     :action="{ label: 'Nueva compra', href: route('purchases.create') }"
                 />
-                <EmptyState
-                    v-else
-                    :icon="Search"
-                    title="Sin resultados"
-                    description="No encontramos compras con ese criterio."
-                />
+                <EmptyState v-else :icon="Search" title="Sin resultados" description="No encontramos compras con ese criterio." />
             </div>
 
             <Pagination v-if="purchases.data.length > 0" :links="purchases.links" />

@@ -38,9 +38,7 @@ const props = defineProps<{
     fields: Record<keyof BusinessForm, FieldConfig>;
 }>();
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Empresa', href: '/settings/business' },
-];
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Empresa', href: '/settings/business' }];
 
 const form = useForm<BusinessForm>({ ...props.business });
 
@@ -49,7 +47,7 @@ const submit = () => {
 };
 
 const groups = ['business', 'invoicing', 'policies'] as const;
-const groupLabels: Record<typeof groups[number], { title: string; description: string }> = {
+const groupLabels: Record<(typeof groups)[number], { title: string; description: string }> = {
     business: { title: 'Datos fiscales y contacto', description: 'Información que aparece en facturas y documentos.' },
     invoicing: { title: 'Facturación', description: 'Prefijos, moneda y notas predeterminadas.' },
     policies: { title: 'Políticas', description: 'Reglas que aplican al sistema.' },
@@ -63,10 +61,7 @@ const groupLabels: Record<typeof groups[number], { title: string; description: s
         <Head title="Datos de la empresa" />
 
         <div class="space-y-6">
-            <Heading
-                title="Datos de la empresa"
-                description="Información fiscal y de contacto que aparece en facturas, reportes y documentos."
-            />
+            <Heading title="Datos de la empresa" description="Información fiscal y de contacto que aparece en facturas, reportes y documentos." />
 
             <form @submit.prevent="submit" class="space-y-6">
                 <Card v-for="group in groups" :key="group">
@@ -92,7 +87,9 @@ const groupLabels: Record<typeof groups[number], { title: string; description: s
                                     v-if="field !== 'address' && field !== 'notes' && field !== 'return_policy_days'"
                                     :id="String(field)"
                                     v-model="form[field as keyof BusinessForm]"
-                                    :type="field === 'email' ? 'email' : (field === 'website' ? 'url' : (field === 'return_policy_days' ? 'number' : 'text'))"
+                                    :type="
+                                        field === 'email' ? 'email' : field === 'website' ? 'url' : field === 'return_policy_days' ? 'number' : 'text'
+                                    "
                                 />
                                 <textarea
                                     v-else-if="field === 'address' || field === 'notes'"
@@ -109,16 +106,10 @@ const groupLabels: Record<typeof groups[number], { title: string; description: s
                                     min="0"
                                     max="365"
                                 />
-                                <p
-                                    v-if="config.description"
-                                    class="text-xs text-muted-foreground"
-                                >
+                                <p v-if="config.description" class="text-xs text-muted-foreground">
                                     {{ config.description }}
                                 </p>
-                                <InputError
-                                    v-if="form.errors[field as keyof BusinessForm]"
-                                    :message="form.errors[field as keyof BusinessForm]"
-                                />
+                                <InputError v-if="form.errors[field as keyof BusinessForm]" :message="form.errors[field as keyof BusinessForm]" />
                             </div>
                         </template>
                     </CardContent>

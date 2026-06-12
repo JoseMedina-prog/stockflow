@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { Building2, Mail, Pencil, Phone, Plus, Search, Trash2, Truck, X } from 'lucide-vue-next';
+import { Mail, Pencil, Phone, Plus, Search, Trash2, Truck, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
 interface SupplierItem {
@@ -94,10 +94,7 @@ const handleDelete = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <PageHeader
-                title="Proveedores"
-                description="Gestiona los proveedores de la tienda."
-            >
+            <PageHeader title="Proveedores" description="Gestiona los proveedores de la tienda.">
                 <template #actions>
                     <Button as-child>
                         <Link :href="route('suppliers.create')">
@@ -121,11 +118,7 @@ const handleDelete = () => {
 
                 <div class="flex flex-col gap-1">
                     <label class="text-xs text-muted-foreground">Estado</label>
-                    <select
-                        v-model="status"
-                        class="h-9 rounded-md border border-input bg-background px-2 text-sm"
-                        @change="applyFilters"
-                    >
+                    <select v-model="status" class="h-9 rounded-md border border-input bg-background px-2 text-sm" @change="applyFilters">
                         <option value="">Todos</option>
                         <option value="active">Activos</option>
                         <option value="inactive">Inactivos</option>
@@ -153,7 +146,10 @@ const handleDelete = () => {
                         <TableRow v-for="supplier in suppliers.data" :key="supplier.id">
                             <TableCell>
                                 <div class="font-medium">{{ supplier.name }}</div>
-                                <div v-if="supplier.email || supplier.phone" class="mt-0.5 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                                <div
+                                    v-if="supplier.email || supplier.phone"
+                                    class="mt-0.5 flex flex-wrap items-center gap-3 text-xs text-muted-foreground"
+                                >
                                     <span v-if="supplier.email" class="flex items-center gap-1">
                                         <Mail class="size-3" />
                                         {{ supplier.email }}
@@ -182,12 +178,7 @@ const handleDelete = () => {
                                             <Pencil />
                                         </Link>
                                     </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        class="text-destructive hover:text-destructive"
-                                        @click="askDelete(supplier)"
-                                    >
+                                    <Button variant="ghost" size="icon" class="text-destructive hover:text-destructive" @click="askDelete(supplier)">
                                         <Trash2 />
                                     </Button>
                                 </div>
@@ -202,12 +193,7 @@ const handleDelete = () => {
                     description="Registra tu primer proveedor para empezar a gestionar compras."
                     :action="{ label: 'Nuevo proveedor', href: route('suppliers.create') }"
                 />
-                <EmptyState
-                    v-else
-                    :icon="Search"
-                    title="Sin resultados"
-                    description="No encontramos proveedores con ese criterio."
-                />
+                <EmptyState v-else :icon="Search" title="Sin resultados" description="No encontramos proveedores con ese criterio." />
             </div>
 
             <Pagination v-if="suppliers.data.length > 0" :links="suppliers.links" />

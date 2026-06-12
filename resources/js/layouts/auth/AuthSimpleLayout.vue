@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import StockFlowLogoIcon from '@/components/StockFlowLogoIcon.vue';
-import Toaster from '@/components/stockflow/Toaster.vue';
 import { Link } from '@inertiajs/vue3';
 
 defineProps<{
@@ -28,6 +27,5 @@ defineProps<{
                 <slot />
             </div>
         </div>
-        <Toaster />
     </div>
 </template>

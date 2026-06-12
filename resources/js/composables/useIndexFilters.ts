@@ -17,11 +17,7 @@ export function useIndexFilters(options: UseIndexFiltersOptions) {
 
     const apply = (extra: Filters = {}) => {
         const params = { ...values.value, ...extra };
-        const cleaned = Object.fromEntries(
-            Object.entries(params).filter(
-                ([, v]) => v !== null && v !== undefined && v !== '' && v !== false,
-            ),
-        );
+        const cleaned = Object.fromEntries(Object.entries(params).filter(([, v]) => v !== null && v !== undefined && v !== '' && v !== false));
         router.get(route(options.routeName), cleaned, {
             preserveScroll: options.preserveScroll ?? true,
             preserveState: options.preserveState ?? true,
@@ -34,9 +30,7 @@ export function useIndexFilters(options: UseIndexFiltersOptions) {
     };
 
     const clear = () => {
-        values.value = Object.fromEntries(
-            Object.entries(options.initial).map(([k]) => [k, null]),
-        );
+        values.value = Object.fromEntries(Object.entries(options.initial).map(([k]) => [k, null]));
         apply();
     };
 
