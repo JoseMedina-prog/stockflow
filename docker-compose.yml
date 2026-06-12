@@ -5,13 +5,14 @@ services:
     working_dir: /var/www/html
     volumes:
       - .:/var/www/html
+      - vendor_data:/var/www/html/vendor
+      - node_modules_data:/var/www/html/node_modules
     ports:
-      - "8000:8000"   # php artisan serve
-      - "5173:5173"   # vite dev (hot reload)
-    command: >
-      sh -c "php artisan serve --host=0.0.0.0 --port=8000 & npm run dev -- --host 0.0.0.0 --port 5173 & wait"
+      - "8000:8000"
+    command: ["serve"]
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: mysql:8.0
@@ -22,9 +23,17 @@ services:
       MYSQL_USER: stockflow
       MYSQL_PASSWORD: secret
     ports:
-      - "3307:3306"   # 3307 afuera para no chocar con MySQL local
+      - "3307:3306"
     volumes:
       - dbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
 
 volumes:
   dbdata:
+  vendor_data:
+  node_modules_data:
