@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Lead extends Model
@@ -53,17 +55,17 @@ class Lead extends Model
         return $this->belongsTo(Customer::class, 'converted_to_customer_id');
     }
 
-    public function opportunities(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function opportunities(): HasMany
     {
         return $this->hasMany(Opportunity::class);
     }
 
-    public function tasks(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    public function tasks(): MorphMany
     {
         return $this->morphMany(Task::class, 'taskable');
     }
 
-    public function activities(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    public function activities(): MorphMany
     {
         return $this->morphMany(Activity::class, 'subject');
     }
@@ -108,14 +110,5 @@ class Lead extends Model
                 ->orWhere('phone', 'like', "%{$term}%")
                 ->orWhere('company', 'like', "%{$term}%");
         });
-    }
-
-    /**
-     * @param  Builder<Lead>  $query
-     * @return Builder<Lead>
-     */
-    public function scopeOwnedBy(Builder $query, int $userId): Builder
-    {
-        return $query->where('owner_id', $userId);
     }
 }

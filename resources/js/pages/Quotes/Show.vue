@@ -193,7 +193,7 @@ const handlePrint = () => {
                         <p v-if="quote.customer?.phone" class="flex items-center gap-1.5 text-xs text-muted-foreground">
                             <Phone class="size-3" /> {{ quote.customer.phone }}
                         </p>
-                        <Link v-if="quote.customer" :href="route('customers.show', quote.customer.id)" class="text-xs hover:underline">
+                        <Link v-if="quote.customer" :href="route('customers.index')" class="text-xs hover:underline">
                             Ver ficha del cliente →
                         </Link>
                     </CardContent>

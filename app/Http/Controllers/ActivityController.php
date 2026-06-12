@@ -9,6 +9,7 @@ use App\Models\Customer;
 use App\Models\Lead;
 use App\Models\Opportunity;
 use App\Models\Sale;
+use App\Support\SubjectRegistry;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -85,7 +86,7 @@ class ActivityController extends Controller
     {
         $this->createActivity($request, $customer);
 
-        return to_route('customers.show', $customer)
+        return to_route('customers.index')
             ->with('success', 'Actividad registrada.');
     }
 
@@ -143,37 +144,20 @@ class ActivityController extends Controller
             return redirect();
         }
 
-        return match ($type) {
-            'App\\Models\\Customer' => redirect()->route('customers.show', ['customer' => $id]),
-            'App\\Models\\Lead' => redirect()->route('leads.show', ['lead' => $id]),
-            'App\\Models\\Opportunity' => redirect()->route('opportunities.show', ['opportunity' => $id]),
-            'App\\Models\\Sale' => redirect()->route('sales.show', ['sale' => $id]),
-            default => redirect(),
-        };
+        $href = SubjectRegistry::href($type, $id);
+
+        return $href ? redirect()->to($href) : redirect();
     }
 
     private function subjectHref(Activity $activity): ?string
     {
-        return match ($activity->subject_type) {
-            'App\\Models\\Customer' => route('customers.show', $activity->subject_id),
-            'App\\Models\\Lead' => route('leads.show', $activity->subject_id),
-            'App\\Models\\Opportunity' => route('opportunities.show', $activity->subject_id),
-            'App\\Models\\Sale' => route('sales.show', $activity->subject_id),
-            default => null,
-        };
+        return SubjectRegistry::href($activity->subject_type, $activity->subject_id);
     }
 
     private function subjectLabel(Activity $activity): string
     {
-        $subject = $activity->subject;
+        $label = SubjectRegistry::labelForInstance($activity->subject);
 
-        if (! $subject) {
-            return '#'.$activity->subject_id;
-        }
-
-        return match (true) {
-            $subject instanceof Sale => 'V-'.str_pad((string) $subject->id, 6, '0', STR_PAD_LEFT),
-            default => $subject->name ?? '#'.$subject->id,
-        };
+        return $label ?? '#'.$activity->subject_id;
     }
 }

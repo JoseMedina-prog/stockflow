@@ -92,7 +92,7 @@ class LeadController extends Controller
             ])
             ->all();
 
-        $owners = User::orderBy('name')->get(['id', 'name'])->map(fn (User $u) => ['id' => $u->id, 'name' => $u->name]);
+        $owners = User::optionsForSelect();
 
         return Inertia::render('Leads/Index', [
             'leads' => $leads,
@@ -118,7 +118,7 @@ class LeadController extends Controller
     public function create(): Response
     {
         return Inertia::render('Leads/Create', [
-            'users' => User::orderBy('name')->get(['id', 'name'])->map(fn (User $u) => ['id' => $u->id, 'name' => $u->name]),
+            'users' => User::optionsForSelect(),
             'sources' => array_map(fn (LeadSource $s) => ['value' => $s->value, 'label' => $s->label()], LeadSource::cases()),
             'stages' => array_map(fn (LeadStage $s) => ['value' => $s->value, 'label' => $s->label()], LeadStage::cases()),
         ]);
@@ -239,7 +239,7 @@ class LeadController extends Controller
                 'owner_id' => $lead->owner_id,
                 'notes' => $lead->notes,
             ],
-            'users' => User::orderBy('name')->get(['id', 'name'])->map(fn (User $u) => ['id' => $u->id, 'name' => $u->name]),
+            'users' => User::optionsForSelect(),
             'sources' => array_map(fn (LeadSource $s) => ['value' => $s->value, 'label' => $s->label()], LeadSource::cases()),
             'stages' => array_map(fn (LeadStage $s) => ['value' => $s->value, 'label' => $s->label()], LeadStage::cases()),
         ]);
@@ -276,7 +276,7 @@ class LeadController extends Controller
 
         $customer = $this->converter->convert($lead, $request->user(), $request->only(['name', 'email', 'phone', 'address']));
 
-        return to_route('customers.show', $customer)
+        return to_route('customers.index')
             ->with('success', "Lead convertido. Cliente «{$customer->name}» creado.");
     }
 

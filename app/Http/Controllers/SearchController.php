@@ -13,6 +13,7 @@ use App\Models\SaleReturn;
 use App\Models\StockMovement;
 use App\Models\Supplier;
 use App\Models\Task;
+use App\Support\SubjectRegistry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -71,7 +72,7 @@ class SearchController extends Controller
                 'name' => $c->name,
                 'email' => $c->email,
                 'phone' => $c->phone,
-                'href' => route('customers.show', $c->id),
+                'href' => route('customers.index'),
             ]);
 
         $suppliers = Supplier::query()
@@ -150,7 +151,7 @@ class SearchController extends Controller
                 'status' => $p->status->value,
                 'status_label' => $p->status->label(),
                 'supplier' => $p->supplier?->name,
-                'href' => route('purchases.show', $p->id),
+                'href' => route('purchases.index'),
             ]);
 
         $returns = SaleReturn::query()
@@ -190,12 +191,8 @@ class SearchController extends Controller
                 'method_label' => $p->method->label(),
                 'amount' => (float) $p->amount,
                 'paid_at' => $p->paid_at->toDateTimeString(),
-                'payable_folio' => $p->payable_type === 'App\\Models\\Sale'
-                    ? 'V-'.str_pad((string) $p->payable_id, 6, '0', STR_PAD_LEFT)
-                    : ($p->payable_type === 'App\\Models\\Purchase' ? 'C-#' : '#').$p->payable_id,
-                'payable_href' => $p->payable_type === 'App\\Models\\Sale'
-                    ? route('sales.show', $p->payable_id)
-                    : ($p->payable_type === 'App\\Models\\Purchase' ? route('purchases.show', $p->payable_id) : null),
+                'payable_folio' => $this->searchPayableFolio($p),
+                'payable_href' => SubjectRegistry::href($p->payable_type, $p->payable_id),
             ]);
 
         $leads = Lead::query()
@@ -271,5 +268,12 @@ class SearchController extends Controller
             'tasks' => $tasks,
             'movements' => $movements,
         ]);
+    }
+
+    private function searchPayableFolio(Payment $payment): string
+    {
+        $label = SubjectRegistry::labelForInstance($payment->payable);
+
+        return $label ?? '#'.$payment->payable_id;
     }
 }

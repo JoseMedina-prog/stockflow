@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AccountType;
-use App\Enums\JournalEntryStatus;
 use App\Models\Account;
 use App\Models\JournalEntry;
+use App\Models\JournalLine;
+use App\Models\Payment;
 use App\Models\Tax;
+use App\Support\SubjectRegistry;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -163,6 +165,7 @@ class AccountingController extends Controller
                 if ($a->normal_balance->value === 'debit') {
                     return ['account' => $a, 'debit' => $balance, 'credit' => 0];
                 }
+
                 return ['account' => $a, 'debit' => 0, 'credit' => $balance];
             });
 
@@ -189,26 +192,27 @@ class AccountingController extends Controller
     {
         [$from, $to] = $this->resolvePeriod($request);
 
-        $revenue = Account::active()->ofType(AccountType::Revenue)
-            ->orderBy('code')->get()
-            ->map(fn (Account $a) => [
-                'id' => $a->id, 'code' => $a->code, 'name' => $a->name,
-                'amount' => $a->balance($from, $to),
-            ]);
-        $expense = Account::active()->ofType(AccountType::Expense)
-            ->orderBy('code')->get()
-            ->map(fn (Account $a) => [
-                'id' => $a->id, 'code' => $a->code, 'name' => $a->name,
-                'amount' => $a->balance($from, $to),
-            ]);
+        $revenue = Account::active()->ofType(AccountType::Revenue)->orderBy('code')->get();
+        $expense = Account::active()->ofType(AccountType::Expense)->orderBy('code')->get();
 
-        $totalRevenue = array_sum(array_column($revenue->all(), 'amount'));
-        $totalExpense = array_sum(array_column($expense->all(), 'amount'));
+        $balances = Account::balancesFor(
+            $revenue->pluck('id')->merge($expense->pluck('id'))->all(),
+            $from,
+            $to,
+        );
+
+        $renderRow = fn (Account $a) => [
+            'id' => $a->id, 'code' => $a->code, 'name' => $a->name,
+            'amount' => $balances[$a->id] ?? 0.0,
+        ];
+
+        $totalRevenue = array_sum(array_column($revenue->map($renderRow)->all(), 'amount'));
+        $totalExpense = array_sum(array_column($expense->map($renderRow)->all(), 'amount'));
         $netIncome = round($totalRevenue - $totalExpense, 2);
 
         return Inertia::render('Accounting/IncomeStatement', [
-            'revenue' => $revenue,
-            'expense' => $expense,
+            'revenue' => $revenue->map($renderRow)->values(),
+            'expense' => $expense->map($renderRow)->values(),
             'totals' => [
                 'revenue' => round($totalRevenue, 2),
                 'expense' => round($totalExpense, 2),
@@ -225,17 +229,27 @@ class AccountingController extends Controller
         $assets = Account::active()->ofType(AccountType::Asset)->orderBy('code')->get();
         $liabilities = Account::active()->ofType(AccountType::Liability)->orderBy('code')->get();
         $equity = Account::active()->ofType(AccountType::Equity)->orderBy('code')->get();
+        $revenue = Account::active()->ofType(AccountType::Revenue)->get();
+        $expense = Account::active()->ofType(AccountType::Expense)->get();
 
-        $netIncome = Account::active()->ofType(AccountType::Revenue)->get()->sum(fn ($a) => $a->balance($from, $to))
-            - Account::active()->ofType(AccountType::Expense)->get()->sum(fn ($a) => $a->balance($from, $to));
+        $balances = Account::balancesFor(
+            collect([$assets, $liabilities, $equity, $revenue, $expense])
+                ->flatMap(fn ($c) => $c->pluck('id'))
+                ->all(),
+            $from,
+            $to,
+        );
 
-        $totalAssets = $assets->sum(fn ($a) => $a->balance($from, $to));
-        $totalLiabilities = $liabilities->sum(fn ($a) => $a->balance($from, $to));
-        $totalEquity = $equity->sum(fn ($a) => $a->balance($from, $to)) + $netIncome;
+        $balancesSum = fn ($collection) => $collection->sum(fn (Account $a) => $balances[$a->id] ?? 0.0);
+
+        $netIncome = $balancesSum($revenue) - $balancesSum($expense);
+        $totalAssets = $balancesSum($assets);
+        $totalLiabilities = $balancesSum($liabilities);
+        $totalEquity = $balancesSum($equity) + $netIncome;
 
         $renderRow = fn (Account $a) => [
             'id' => $a->id, 'code' => $a->code, 'name' => $a->name,
-            'balance' => round($a->balance($from, $to), 2),
+            'balance' => round($balances[$a->id] ?? 0.0, 2),
         ];
 
         return Inertia::render('Accounting/BalanceSheet', [
@@ -345,21 +359,20 @@ class AccountingController extends Controller
         if (! $tax->account) {
             return 0.0;
         }
+
         return round($tax->account->balance($from, $to), 2);
     }
 
     private function sourceHref(JournalEntry $entry): ?string
     {
-        if (! $entry->source_type || ! $entry->source_id) {
+        if (! $entry->source_type) {
             return null;
         }
 
-        return match ($entry->source_type) {
-            'App\\Models\\Sale' => route('sales.show', $entry->source_id),
-            'App\\Models\\Purchase' => route('purchases.show', $entry->source_id),
-            'App\\Models\\Payment' => route('payments.index'),
-            'App\\Models\\SaleReturn' => route('returns.show', $entry->source_id),
-            default => null,
-        };
+        if ($entry->source_type === Payment::class) {
+            return route('payments.index');
+        }
+
+        return SubjectRegistry::href($entry->source_type, $entry->source_id);
     }
 }

@@ -4,12 +4,10 @@ namespace Tests\Feature;
 
 use App\Enums\PurchaseStatus;
 use App\Enums\StockMovementType;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Purchase;
-use App\Models\PurchaseItem;
-use App\Models\StockMovement;
 use App\Models\Supplier;
-use App\Models\User;
 use App\Services\PurchaseService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -26,7 +24,7 @@ class PurchaseTest extends TestCase
     private function makeProduct(int $stock = 10, float $price = 50): Product
     {
         return Product::factory()->create([
-            'category_id' => \App\Models\Category::factory(),
+            'category_id' => Category::factory(),
             'stock' => $stock,
             'price' => $price,
         ]);
@@ -178,46 +176,6 @@ class PurchaseTest extends TestCase
         $this->assertSame(10, $product->fresh()->stock);
     }
 
-    public function test_received_purchase_cannot_be_destroyed(): void
-    {
-        $supplier = $this->makeSupplier();
-        $product = $this->makeProduct();
-
-        $purchase = $this->app->make(PurchaseService::class)->create(
-            supplier: $supplier,
-            user: $this->comprador(),
-            purchaseDate: now(),
-            items: [['product_id' => $product->id, 'quantity' => 1, 'unit_cost' => 10]],
-        );
-
-        $this->actingAsAdmin()
-            ->delete(route('purchases.destroy', $purchase))
-            ->assertRedirect(route('purchases.show', $purchase))
-            ->assertSessionHas('error');
-
-        $this->assertDatabaseHas('purchases', ['id' => $purchase->id]);
-    }
-
-    public function test_pending_purchase_can_be_destroyed(): void
-    {
-        $supplier = $this->makeSupplier();
-        $product = $this->makeProduct();
-
-        $purchase = $this->app->make(PurchaseService::class)->create(
-            supplier: $supplier,
-            user: $this->comprador(),
-            purchaseDate: now(),
-            items: [['product_id' => $product->id, 'quantity' => 1, 'unit_cost' => 10]],
-            receiveImmediately: false,
-        );
-
-        $this->actingAsAdmin()
-            ->delete(route('purchases.destroy', $purchase))
-            ->assertRedirect(route('purchases.index'));
-
-        $this->assertSoftDeleted('purchases', ['id' => $purchase->id]);
-    }
-
     public function test_purchase_items_required(): void
     {
         $supplier = $this->makeSupplier();
@@ -242,29 +200,6 @@ class PurchaseTest extends TestCase
                 ],
             ])
             ->assertSessionHasErrors('supplier_id');
-    }
-
-    public function test_purchase_show_page_renders(): void
-    {
-        $supplier = $this->makeSupplier();
-        $product = $this->makeProduct();
-        $purchase = Purchase::factory()->received()->create([
-            'supplier_id' => $supplier->id,
-            'user_id' => $this->admin()->id,
-        ]);
-        PurchaseItem::factory()->create([
-            'purchase_id' => $purchase->id,
-            'product_id' => $product->id,
-        ]);
-
-        $this->actingAsAdmin()
-            ->get(route('purchases.show', $purchase))
-            ->assertOk()
-            ->assertInertia(fn ($page) => $page
-                ->component('Purchases/Show')
-                ->where('purchase.folio', $purchase->folio)
-                ->where('purchase.status', 'received')
-                ->has('purchase.items', 1));
     }
 
     public function test_vendedor_cannot_access_purchases(): void

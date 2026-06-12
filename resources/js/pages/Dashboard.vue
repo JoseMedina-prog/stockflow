@@ -440,7 +440,7 @@ const cashflowTotal = computed(() => props.chart.reduce((acc, d) => acc + d.cash
                             <TableBody>
                                 <TableRow v-for="ap in accountsPayable" :key="ap.id">
                                     <TableCell>
-                                        <Link :href="route('purchases.show', ap.id)" class="font-mono text-xs hover:underline">
+                                        <Link :href="route('purchases.index')" class="font-mono text-xs hover:underline">
                                             {{ ap.folio }}
                                         </Link>
                                     </TableCell>

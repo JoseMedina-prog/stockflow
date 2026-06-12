@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Quote extends Model
@@ -79,12 +80,12 @@ class Quote extends Model
         return $this->belongsTo(Sale::class, 'converted_sale_id');
     }
 
-    public function tasks(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    public function tasks(): MorphMany
     {
         return $this->morphMany(Task::class, 'taskable');
     }
 
-    public function activities(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    public function activities(): MorphMany
     {
         return $this->morphMany(Activity::class, 'subject');
     }
@@ -117,15 +118,6 @@ class Quote extends Model
     public function scopeOpen(Builder $query): Builder
     {
         return $query->whereIn('status', [QuoteStatus::Draft->value, QuoteStatus::Sent->value]);
-    }
-
-    /**
-     * @param  Builder<Quote>  $query
-     * @return Builder<Quote>
-     */
-    public function scopeForCustomer(Builder $query, int $customerId): Builder
-    {
-        return $query->where('customer_id', $customerId);
     }
 
     /**

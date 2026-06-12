@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ActivityType;
+use App\Support\SubjectRegistry;
 use Database\Factories\ActivityFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -48,33 +49,9 @@ class Activity extends Model
 
     public function subjectTypeLabel(): string
     {
-        return match ($this->subject_type) {
-            'App\\Models\\Customer' => 'Cliente',
-            'App\\Models\\Lead' => 'Lead',
-            'App\\Models\\Opportunity' => 'Oportunidad',
-            'App\\Models\\Sale' => 'Venta',
-            default => class_basename($this->subject_type ?? ''),
-        };
-    }
+        $label = SubjectRegistry::label($this->subject_type);
 
-    /**
-     * @param  Builder<Activity>  $query
-     * @return Builder<Activity>
-     */
-    public function scopeForSubject(Builder $query, Model $subject): Builder
-    {
-        return $query
-            ->where('subject_type', $subject->getMorphClass())
-            ->where('subject_id', $subject->getKey());
-    }
-
-    /**
-     * @param  Builder<Activity>  $query
-     * @return Builder<Activity>
-     */
-    public function scopeOfType(Builder $query, ActivityType $type): Builder
-    {
-        return $query->where('type', $type->value);
+        return $label ?? class_basename($this->subject_type ?? '');
     }
 
     /**
@@ -86,6 +63,7 @@ class Activity extends Model
         if ($from) {
             $query->where('occurred_at', '>=', $from);
         }
+
         if ($to) {
             $query->where('occurred_at', '<=', $to);
         }

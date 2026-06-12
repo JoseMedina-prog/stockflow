@@ -70,13 +70,38 @@ class OpportunityController extends Controller
             ])
             ->all();
 
+        $openStages = [
+            OpportunityStage::Prospecting->value,
+            OpportunityStage::Qualification->value,
+            OpportunityStage::Proposal->value,
+            OpportunityStage::Negotiation->value,
+        ];
+
+        $summaryRow = Opportunity::query()
+            ->selectRaw('
+                SUM(CASE WHEN stage IN (?, ?, ?, ?) THEN 1 ELSE 0 END) as open_count,
+                COALESCE(SUM(CASE WHEN stage IN (?, ?, ?, ?) THEN amount ELSE 0 END), 0) as open_value,
+                COALESCE(SUM(CASE WHEN stage IN (?, ?, ?, ?) THEN amount * probability / 100.0 ELSE 0 END), 0) as weighted_value,
+                SUM(CASE WHEN stage = ? THEN 1 ELSE 0 END) as won_count,
+                COALESCE(SUM(CASE WHEN stage = ? THEN amount ELSE 0 END), 0) as won_value,
+                SUM(CASE WHEN stage = ? THEN 1 ELSE 0 END) as lost_count
+            ', [
+                ...$openStages,
+                ...$openStages,
+                ...$openStages,
+                OpportunityStage::ClosedWon->value,
+                OpportunityStage::ClosedWon->value,
+                OpportunityStage::ClosedLost->value,
+            ])
+            ->first();
+
         $summary = [
-            'open_count' => Opportunity::open()->count(),
-            'open_value' => (float) Opportunity::open()->sum('amount'),
-            'weighted_value' => (float) Opportunity::open()->get()->sum(fn ($o) => $o->weightedAmount()),
-            'won_count' => Opportunity::where('stage', OpportunityStage::ClosedWon->value)->count(),
-            'won_value' => (float) Opportunity::where('stage', OpportunityStage::ClosedWon->value)->sum('amount'),
-            'lost_count' => Opportunity::where('stage', OpportunityStage::ClosedLost->value)->count(),
+            'open_count' => (int) $summaryRow->open_count,
+            'open_value' => (float) $summaryRow->open_value,
+            'weighted_value' => (float) $summaryRow->weighted_value,
+            'won_count' => (int) $summaryRow->won_count,
+            'won_value' => (float) $summaryRow->won_value,
+            'lost_count' => (int) $summaryRow->lost_count,
         ];
 
         $opportunities = Opportunity::query()
@@ -113,7 +138,7 @@ class OpportunityController extends Controller
                 OpportunityStage::cases(),
             ),
             'customers' => Customer::orderBy('name')->get(['id', 'name'])->map(fn (Customer $c) => ['id' => $c->id, 'name' => $c->name]),
-            'owners' => User::orderBy('name')->get(['id', 'name'])->map(fn (User $u) => ['id' => $u->id, 'name' => $u->name]),
+            'owners' => User::optionsForSelect(),
             'summary' => $summary,
             'filters' => [
                 'search' => $request->string('search')->toString(),
@@ -132,7 +157,7 @@ class OpportunityController extends Controller
                 array_filter(OpportunityStage::cases(), fn ($s) => $s->isOpen()),
             ),
             'customers' => Customer::orderBy('name')->get(['id', 'name'])->map(fn (Customer $c) => ['id' => $c->id, 'name' => $c->name]),
-            'users' => User::orderBy('name')->get(['id', 'name'])->map(fn (User $u) => ['id' => $u->id, 'name' => $u->name]),
+            'users' => User::optionsForSelect(),
         ]);
     }
 
@@ -259,7 +284,7 @@ class OpportunityController extends Controller
                 array_filter(OpportunityStage::cases(), fn ($s) => $s->isOpen()),
             ),
             'customers' => Customer::orderBy('name')->get(['id', 'name'])->map(fn (Customer $c) => ['id' => $c->id, 'name' => $c->name]),
-            'users' => User::orderBy('name')->get(['id', 'name'])->map(fn (User $u) => ['id' => $u->id, 'name' => $u->name]),
+            'users' => User::optionsForSelect(),
         ]);
     }
 

@@ -144,7 +144,7 @@ class PurchaseController extends Controller
             notes: $request->input('notes'),
         );
 
-        return to_route('purchases.show', $purchase)
+        return to_route('purchases.index')
             ->with('success', $purchase->status === PurchaseStatus::Received
                 ? "Compra {$purchase->folio} registrada y stock actualizado."
                 : "Compra {$purchase->folio} registrada como pendiente.");
@@ -211,7 +211,7 @@ class PurchaseController extends Controller
     public function edit(Purchase $purchase): Response|RedirectResponse
     {
         if (! $purchase->status->canEditItems()) {
-            return to_route('purchases.show', $purchase)
+            return to_route('purchases.index')
                 ->with('error', "No se puede editar una compra en estado {$purchase->status->label()}.");
         }
 
@@ -263,47 +263,33 @@ class PurchaseController extends Controller
             notes: $request->input('notes'),
         );
 
-        return to_route('purchases.show', $purchase)
-            ->with('success', "Compra {$purchase->folio} actualizada.");
-    }
-
-    public function destroy(Purchase $purchase): RedirectResponse
-    {
-        if (! $purchase->status->canDelete()) {
-            return to_route('purchases.show', $purchase)
-                ->with('error', 'Solo se pueden eliminar compras en estado pendiente.');
-        }
-
-        $folio = $purchase->folio;
-        $purchase->delete();
-
         return to_route('purchases.index')
-            ->with('success', "Compra {$folio} eliminada.");
+            ->with('success', "Compra {$purchase->folio} actualizada.");
     }
 
     public function receive(Request $request, Purchase $purchase): RedirectResponse
     {
         if (! $purchase->status->canReceive()) {
-            return to_route('purchases.show', $purchase)
+            return to_route('purchases.index')
                 ->with('error', "La compra ya está en estado {$purchase->status->label()}.");
         }
 
         $this->service->receive($purchase, $request->user());
 
-        return to_route('purchases.show', $purchase)
+        return to_route('purchases.index')
             ->with('success', "Compra {$purchase->folio} marcada como recibida. Stock actualizado.");
     }
 
     public function cancel(Request $request, Purchase $purchase): RedirectResponse
     {
         if (! $purchase->status->canCancel()) {
-            return to_route('purchases.show', $purchase)
+            return to_route('purchases.index')
                 ->with('error', 'La compra ya está cancelada.');
         }
 
         $this->service->cancel($purchase, $request->user(), $request->input('notes'));
 
-        return to_route('purchases.show', $purchase)
+        return to_route('purchases.index')
             ->with('success', "Compra {$purchase->folio} cancelada. Stock revertido.");
     }
 }

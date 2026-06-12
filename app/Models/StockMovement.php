@@ -55,24 +55,6 @@ class StockMovement extends Model
      * @param  Builder<StockMovement>  $query
      * @return Builder<StockMovement>
      */
-    public function scopeForProduct(Builder $query, int $productId): Builder
-    {
-        return $query->where('product_id', $productId);
-    }
-
-    /**
-     * @param  Builder<StockMovement>  $query
-     * @return Builder<StockMovement>
-     */
-    public function scopeOfType(Builder $query, StockMovementType $type): Builder
-    {
-        return $query->where('type', $type->value);
-    }
-
-    /**
-     * @param  Builder<StockMovement>  $query
-     * @return Builder<StockMovement>
-     */
     public function scopeInDateRange(Builder $query, ?string $from, ?string $to): Builder
     {
         if ($from) {

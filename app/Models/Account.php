@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Account extends Model
 {
@@ -84,25 +85,49 @@ class Account extends Model
      */
     public function balance(?string $from = null, ?string $to = null): float
     {
-        $query = $this->journalLines()
-            ->whereHas('journalEntry', fn ($q) => $q->where('status', 'posted'));
+        return self::balancesFor([$this->id], $from, $to)[$this->id] ?? 0.0;
+    }
+
+    /**
+     * Compute balances for many accounts in a single query.
+     *
+     * @param  array<int>  $accountIds
+     * @return array<int, float> map of account_id => balance
+     */
+    public static function balancesFor(array $accountIds, ?string $from = null, ?string $to = null): array
+    {
+        if (empty($accountIds)) {
+            return [];
+        }
+
+        $query = DB::table('journal_lines')
+            ->join('journal_entries', 'journal_entries.id', '=', 'journal_lines.journal_entry_id')
+            ->join('accounts', 'accounts.id', '=', 'journal_lines.account_id')
+            ->whereIn('journal_lines.account_id', $accountIds)
+            ->where('journal_entries.status', 'posted');
 
         if ($from) {
-            $query->whereHas('journalEntry', fn ($q) => $q->where('entry_date', '>=', $from));
+            $query->where('journal_entries.entry_date', '>=', $from);
         }
         if ($to) {
-            $query->whereHas('journalEntry', fn ($q) => $q->where('entry_date', '<=', $to));
+            $query->where('journal_entries.entry_date', '<=', $to);
         }
 
-        $totals = $query
-            ->selectRaw('SUM(debit) as debit_sum, SUM(credit) as credit_sum')
-            ->first();
+        $rows = $query
+            ->selectRaw('journal_lines.account_id as account_id, accounts.normal_balance as normal_balance, COALESCE(SUM(journal_lines.debit), 0) as debit_sum, COALESCE(SUM(journal_lines.credit), 0) as credit_sum')
+            ->groupBy('journal_lines.account_id', 'accounts.normal_balance')
+            ->get();
 
-        $debit = (float) ($totals->debit_sum ?? 0);
-        $credit = (float) ($totals->credit_sum ?? 0);
+        $balances = array_fill_keys($accountIds, 0.0);
 
-        return $this->normal_balance === AccountNormalBalance::Debit
-            ? round($debit - $credit, 2)
-            : round($credit - $debit, 2);
+        foreach ($rows as $row) {
+            $debit = (float) $row->debit_sum;
+            $credit = (float) $row->credit_sum;
+            $balances[(int) $row->account_id] = $row->normal_balance === AccountNormalBalance::Debit->value
+                ? round($debit - $credit, 2)
+                : round($credit - $debit, 2);
+        }
+
+        return $balances;
     }
 }

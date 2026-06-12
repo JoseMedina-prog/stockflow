@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Customer\StoreCustomerRequest;
 use App\Http\Requests\Customer\UpdateCustomerRequest;
 use App\Models\Customer;
-use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -38,7 +38,7 @@ class CustomerController extends Controller
                 'phone' => $customer->phone,
                 'address' => $customer->address,
                 'sales_count' => (int) $customer->sales_count,
-                'total_spent' => (float) ($customer->total_spent ?? 0),
+                'total_spent' => (float) $customer->total_spent,
             ]);
 
         return Inertia::render('Customers/Index', [
@@ -58,7 +58,7 @@ class CustomerController extends Controller
     {
         $customer = Customer::create($request->validated());
 
-        return to_route('customers.show', $customer)
+        return to_route('customers.index')
             ->with('success', 'Cliente creado correctamente.');
     }
 
@@ -67,6 +67,7 @@ class CustomerController extends Controller
         $customer->load([
             'sales' => fn ($q) => $q->latest('sale_date')->limit(15),
             'sales.user:id,name',
+            'sales.items',
             'returns' => fn ($q) => $q->latest('return_date')->limit(10),
             'creditNotes' => fn ($q) => $q->latest('issue_date')->limit(10),
             'opportunities' => fn ($q) => $q->latest('updated_at')->limit(10),
@@ -75,24 +76,52 @@ class CustomerController extends Controller
             'activities' => fn ($q) => $q->latest('occurred_at')->limit(20),
         ]);
 
+        $openOpportunityStages = ['prospecting', 'qualification', 'proposal', 'negotiation'];
+        $openTaskStatuses = ['pending', 'in_progress'];
+
+        $salesAgg = $customer->sales()
+            ->selectRaw('
+                COALESCE(SUM(total), 0) as lifetime_value,
+                COUNT(*) as sales_count,
+                COALESCE(AVG(total), 0) as avg_ticket,
+                COALESCE(SUM(balance), 0) as open_balance,
+                SUM(CASE WHEN balance > 0 THEN 1 ELSE 0 END) as pending_sales,
+                MAX(sale_date) as last_purchase_at
+            ')
+            ->first();
+
+        $returnsAgg = $customer->returns()
+            ->selectRaw('COUNT(*) as returns_count, COALESCE(SUM(total), 0) as returns_total')
+            ->first();
+
+        $creditNotesAgg = $customer->creditNotes()
+            ->where('status', 'active')
+            ->selectRaw('COUNT(*) as credit_notes_active, COALESCE(SUM(balance_remaining), 0) as credit_notes_balance')
+            ->first();
+
+        $opportunitiesAgg = $customer->opportunities()
+            ->whereIn('stage', $openOpportunityStages)
+            ->selectRaw('COUNT(*) as open_opportunities, COALESCE(SUM(amount), 0) as open_opportunities_value')
+            ->first();
+
+        $openTasksCount = $customer->tasks()->whereIn('status', $openTaskStatuses)->count();
+
         $kpis = [
-            'lifetime_value' => (float) $customer->sales()->sum('total'),
-            'sales_count' => (int) $customer->sales()->count(),
-            'avg_ticket' => (float) ($customer->sales()->avg('total') ?? 0),
-            'open_balance' => (float) $customer->sales()->sum('balance'),
-            'pending_sales' => (int) $customer->sales()->where('balance', '>', 0)->count(),
-            'returns_count' => (int) $customer->returns()->count(),
-            'returns_total' => (float) $customer->returns()->sum('total'),
-            'credit_notes_active' => (int) $customer->creditNotes()->where('status', 'active')->count(),
-            'credit_notes_balance' => (float) $customer->creditNotes()->where('status', 'active')->sum('balance_remaining'),
-            'open_opportunities' => (int) $customer->opportunities()->whereIn('stage', [
-                'prospecting', 'qualification', 'proposal', 'negotiation',
-            ])->count(),
-            'open_opportunities_value' => (float) $customer->opportunities()->whereIn('stage', [
-                'prospecting', 'qualification', 'proposal', 'negotiation',
-            ])->sum('amount'),
-            'open_tasks' => (int) $customer->tasks()->whereIn('status', ['pending', 'in_progress'])->count(),
-            'last_purchase_at' => optional($customer->sales()->latest('sale_date')->first())->sale_date?->toDateTimeString(),
+            'lifetime_value' => (float) $salesAgg->lifetime_value,
+            'sales_count' => (int) $salesAgg->sales_count,
+            'avg_ticket' => (float) $salesAgg->avg_ticket,
+            'open_balance' => (float) $salesAgg->open_balance,
+            'pending_sales' => (int) $salesAgg->pending_sales,
+            'returns_count' => (int) $returnsAgg->returns_count,
+            'returns_total' => (float) $returnsAgg->returns_total,
+            'credit_notes_active' => (int) $creditNotesAgg->credit_notes_active,
+            'credit_notes_balance' => (float) $creditNotesAgg->credit_notes_balance,
+            'open_opportunities' => (int) $opportunitiesAgg->open_opportunities,
+            'open_opportunities_value' => (float) $opportunitiesAgg->open_opportunities_value,
+            'open_tasks' => $openTasksCount,
+            'last_purchase_at' => $salesAgg->last_purchase_at
+                ? Carbon::parse($salesAgg->last_purchase_at)->toDateTimeString()
+                : null,
         ];
 
         $recentSales = $customer->sales->map(fn ($s) => [
@@ -103,7 +132,7 @@ class CustomerController extends Controller
             'paid_amount' => (float) $s->paid_amount,
             'balance' => (float) $s->balance,
             'is_fully_paid' => (float) $s->balance <= 0,
-            'items_count' => $s->items()->count(),
+            'items_count' => $s->items->count(),
             'user' => ['id' => $s->user->id, 'name' => $s->user->name],
         ])->values();
 
@@ -204,7 +233,7 @@ class CustomerController extends Controller
     {
         $customer->update($request->validated());
 
-        return to_route('customers.show', $customer)
+        return to_route('customers.index')
             ->with('success', 'Cliente actualizado correctamente.');
     }
 

@@ -132,7 +132,7 @@ const handleDelete = () => {
                     <TableBody>
                         <TableRow v-for="customer in customers.data" :key="customer.id">
                             <TableCell class="font-medium">
-                                <Link :href="route('customers.show', customer.id)" class="hover:underline">
+                                <Link :href="route('customers.index')" class="hover:underline">
                                     {{ customer.name }}
                                 </Link>
                             </TableCell>
@@ -159,7 +159,7 @@ const handleDelete = () => {
                             <TableCell class="text-right">
                                 <div class="flex justify-end gap-1">
                                     <Button variant="ghost" size="icon" as-child>
-                                        <Link :href="route('customers.show', customer.id)">
+                                        <Link :href="route('customers.index')">
                                             <Eye />
                                         </Link>
                                     </Button>

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Purchase extends Model
@@ -60,7 +61,7 @@ class Purchase extends Model
         return $this->hasMany(PurchaseItem::class);
     }
 
-    public function payments(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    public function payments(): MorphMany
     {
         return $this->morphMany(Payment::class, 'payable');
     }
@@ -86,15 +87,6 @@ class Purchase extends Model
     public function scopeReceived(Builder $query): Builder
     {
         return $query->where('status', PurchaseStatus::Received->value);
-    }
-
-    /**
-     * @param  Builder<Purchase>  $query
-     * @return Builder<Purchase>
-     */
-    public function scopeForSupplier(Builder $query, int $supplierId): Builder
-    {
-        return $query->where('supplier_id', $supplierId);
     }
 
     /**

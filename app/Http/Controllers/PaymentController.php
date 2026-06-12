@@ -8,6 +8,7 @@ use App\Models\Payment;
 use App\Models\Purchase;
 use App\Models\Sale;
 use App\Services\PaymentService;
+use App\Support\SubjectRegistry;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -56,8 +57,11 @@ class PaymentController extends Controller
         }
 
         if ($payableType = $request->string('type')->toString()) {
-            $map = ['sale' => 'App\\Models\\Sale', 'purchase' => 'App\\Models\\Purchase'];
-            $class = $map[$payableType] ?? null;
+            $reverseMap = [
+                SubjectRegistry::TYPE_SALE => Sale::class,
+                SubjectRegistry::TYPE_PURCHASE => Purchase::class,
+            ];
+            $class = $reverseMap[$payableType] ?? null;
             if ($class) {
                 $query->where('payable_type', $class);
             }
@@ -76,7 +80,7 @@ class PaymentController extends Controller
                 'reference' => $p->reference,
                 'notes' => $p->notes,
                 'paid_at' => $p->paid_at->toDateTimeString(),
-                'payable_type' => $p->payable_type === 'App\\Models\\Sale' ? 'sale' : 'purchase',
+                'payable_type' => SubjectRegistry::type($p->payable_type) ?? $p->payable_type,
                 'payable_folio' => $this->payableFolio($p),
                 'payable_href' => $this->payableHref($p),
                 'user' => ['id' => $p->user->id, 'name' => $p->user->name],
@@ -155,7 +159,7 @@ class PaymentController extends Controller
             return back()->withErrors(['amount' => $e->getMessage()])->withInput();
         }
 
-        return to_route('purchases.show', $purchase)
+        return to_route('purchases.index')
             ->with('success', "Pago {$payment->folio} registrado correctamente.");
     }
 
@@ -167,7 +171,7 @@ class PaymentController extends Controller
         $payable = $payableClass::find($payableId);
         $redirectRoute = $payable instanceof Sale
             ? 'sales.show'
-            : 'purchases.show';
+            : 'purchases.index';
 
         $this->service->void($payment, request()->user());
 
@@ -177,25 +181,13 @@ class PaymentController extends Controller
 
     private function payableFolio(Payment $payment): ?string
     {
-        if ($payment->payable_type === 'App\\Models\\Sale') {
-            return 'V-'.str_pad((string) $payment->payable_id, 6, '0', STR_PAD_LEFT);
-        }
-        if ($payment->payable_type === 'App\\Models\\Purchase') {
-            return $payment->payable?->folio ?? '#'.$payment->payable_id;
-        }
+        $label = SubjectRegistry::labelForInstance($payment->payable);
 
-        return '#'.$payment->payable_id;
+        return $label ?? '#'.$payment->payable_id;
     }
 
     private function payableHref(Payment $payment): ?string
     {
-        if ($payment->payable_type === 'App\\Models\\Sale') {
-            return route('sales.show', $payment->payable_id);
-        }
-        if ($payment->payable_type === 'App\\Models\\Purchase') {
-            return route('purchases.show', $payment->payable_id);
-        }
-
-        return null;
+        return SubjectRegistry::href($payment->payable_type, $payment->payable_id);
     }
 }

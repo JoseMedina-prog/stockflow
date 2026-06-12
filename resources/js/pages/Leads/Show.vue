@@ -181,7 +181,7 @@ const handleDeleteActivity = (id: number) => {
                     Lead convertido a cliente
                 </p>
                 <p class="mt-1 text-xs">
-                    <Link :href="route('customers.show', lead.customer?.id ?? 0)" class="font-semibold hover:underline">
+                    <Link :href="route('customers.index')" class="font-semibold hover:underline">
                         {{ lead.customer?.name }}
                     </Link>
                     · convertido el {{ formatDateTime(lead.converted_at ?? undefined) }}

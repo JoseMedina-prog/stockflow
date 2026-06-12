@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Opportunity extends Model
@@ -55,12 +56,12 @@ class Opportunity extends Model
         return $this->belongsTo(User::class, 'owner_id');
     }
 
-    public function tasks(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    public function tasks(): MorphMany
     {
         return $this->morphMany(Task::class, 'taskable');
     }
 
-    public function activities(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    public function activities(): MorphMany
     {
         return $this->morphMany(Activity::class, 'subject');
     }
@@ -101,15 +102,6 @@ class Opportunity extends Model
             OpportunityStage::ClosedWon->value,
             OpportunityStage::ClosedLost->value,
         ]);
-    }
-
-    /**
-     * @param  Builder<Opportunity>  $query
-     * @return Builder<Opportunity>
-     */
-    public function scopeInStage(Builder $query, OpportunityStage $stage): Builder
-    {
-        return $query->where('stage', $stage->value);
     }
 
     /**

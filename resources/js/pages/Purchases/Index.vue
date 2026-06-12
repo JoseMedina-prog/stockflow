@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ConfirmDialog from '@/components/stockflow/ConfirmDialog.vue';
 import EmptyState from '@/components/stockflow/EmptyState.vue';
 import PageHeader from '@/components/stockflow/PageHeader.vue';
 import { Badge } from '@/components/ui/badge';
@@ -11,7 +10,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { formatCurrency } from '@/composables/useFormat';
-import { Eye, Pencil, Plus, Search, ShoppingBag, Trash2, X } from 'lucide-vue-next';
+import { Eye, Pencil, Plus, Search, ShoppingBag, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
 interface PurchaseItem {
@@ -96,28 +95,6 @@ const applyFilters = () => {
 
 const clearFilters = () => {
     router.get(route('purchases.index'), {}, { preserveScroll: true });
-};
-
-const confirmOpen = ref(false);
-const processing = ref(false);
-const target = ref<PurchaseItem | null>(null);
-
-const askDelete = (purchase: PurchaseItem) => {
-    target.value = purchase;
-    confirmOpen.value = true;
-};
-
-const handleDelete = () => {
-    if (!target.value) return;
-    processing.value = true;
-    router.delete(route('purchases.destroy', target.value.id), {
-        preserveScroll: true,
-        onFinish: () => {
-            processing.value = false;
-            confirmOpen.value = false;
-            target.value = null;
-        },
-    });
 };
 </script>
 
@@ -225,7 +202,7 @@ const handleDelete = () => {
                             <TableCell class="text-right">
                                 <div class="flex justify-end gap-1">
                                     <Button variant="ghost" size="icon" as-child>
-                                        <Link :href="route('purchases.show', purchase.id)">
+                                        <Link :href="route('purchases.index')">
                                             <Eye />
                                         </Link>
                                     </Button>
@@ -238,15 +215,6 @@ const handleDelete = () => {
                                         <Link :href="route('purchases.edit', purchase.id)">
                                             <Pencil />
                                         </Link>
-                                    </Button>
-                                    <Button
-                                        v-if="purchase.status === 'pending'"
-                                        variant="ghost"
-                                        size="icon"
-                                        class="text-destructive hover:text-destructive"
-                                        @click="askDelete(purchase)"
-                                    >
-                                        <Trash2 />
                                     </Button>
                                 </div>
                             </TableCell>
@@ -270,13 +238,5 @@ const handleDelete = () => {
 
             <Pagination v-if="purchases.data.length > 0" :links="purchases.links" />
         </div>
-
-        <ConfirmDialog
-            v-model:open="confirmOpen"
-            title="Eliminar compra"
-            :description="`¿Estás seguro de eliminar la compra «${target?.folio}»? Esta acción no se puede deshacer.`"
-            :processing="processing"
-            @confirm="handleDelete"
-        />
     </AppLayout>
 </template>

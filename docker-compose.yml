@@ -14,6 +14,20 @@ services:
       db:
         condition: service_healthy
 
+  vite:
+    image: node:20-alpine
+    container_name: stockflow_vite
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - node_modules_data:/var/www/html/node_modules
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    depends_on:
+      app:
+        condition: service_started
+
   db:
     image: mysql:8.0
     container_name: stockflow_db

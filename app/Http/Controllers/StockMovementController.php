@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Enums\StockMovementType;
 use App\Models\Product;
-use App\Models\Purchase;
-use App\Models\SaleReturn;
 use App\Models\StockMovement;
+use App\Support\SubjectRegistry;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -95,43 +95,40 @@ class StockMovementController extends Controller
 
     private function referenceLabel(StockMovement $movement): ?string
     {
-        return match ($movement->reference_type) {
-            'App\\Models\\Sale' => 'Venta #'.$movement->reference_id,
-            'sale' => 'Venta #'.$movement->reference_id,
-            'App\\Models\\Purchase' => 'Compra '.$this->purchaseFolio($movement->reference_id),
-            'purchase' => 'Compra '.$this->purchaseFolio($movement->reference_id),
-            'App\\Models\\SaleReturn' => 'Devolución '.$this->returnFolio($movement->reference_id),
-            default => null,
-        };
+        if (! $movement->reference_type || ! $movement->reference_id) {
+            return null;
+        }
+
+        $type = $movement->reference_type;
+        $label = SubjectRegistry::label($type);
+
+        if ($label === null) {
+            return null;
+        }
+
+        $instance = $this->referenceInstance($type, $movement->reference_id);
+        $detail = $instance
+            ? SubjectRegistry::labelForInstance($instance)
+            : '#'.$movement->reference_id;
+
+        return $label.' '.$detail;
     }
 
     private function referenceHref(StockMovement $movement): ?string
     {
-        return match ($movement->reference_type) {
-            'App\\Models\\Sale', 'sale' => $movement->reference_id ? route('sales.show', $movement->reference_id) : null,
-            'App\\Models\\Purchase', 'purchase' => $movement->reference_id ? route('purchases.show', $movement->reference_id) : null,
-            'App\\Models\\SaleReturn' => $movement->reference_id ? route('returns.show', $movement->reference_id) : null,
-            default => null,
-        };
+        if (! $movement->reference_type || ! $movement->reference_id) {
+            return null;
+        }
+
+        return SubjectRegistry::href($movement->reference_type, $movement->reference_id);
     }
 
-    private function returnFolio(?int $id): string
+    private function referenceInstance(string $type, int $id): ?Model
     {
-        if (! $id) {
-            return '#?';
+        if (! class_exists($type)) {
+            return null;
         }
-        $folio = SaleReturn::find($id)?->folio;
 
-        return $folio ?? '#'.$id;
-    }
-
-    private function purchaseFolio(?int $id): string
-    {
-        if (! $id) {
-            return '#?';
-        }
-        $folio = Purchase::find($id)?->folio;
-
-        return $folio ?? '#'.$id;
+        return $type::find($id);
     }
 }

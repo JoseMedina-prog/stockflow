@@ -13,6 +13,7 @@ use App\Models\Sale;
 use App\Models\Task;
 use App\Models\User;
 use App\Services\TaskCompletionService;
+use App\Support\SubjectRegistry;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -87,8 +88,8 @@ class TaskController extends Controller
                 'completed_at' => $t->completed_at?->toDateTimeString(),
                 'assignee' => $t->assignee ? ['id' => $t->assignee->id, 'name' => $t->assignee->name] : null,
                 'creator' => $t->creator ? ['id' => $t->creator->id, 'name' => $t->creator->name] : null,
-                'taskable_type' => $this->taskableTypeLabel($t->taskable_type),
-                'taskable_href' => $this->taskableHref($t),
+                'taskable_type' => SubjectRegistry::label($t->taskable_type),
+                'taskable_href' => SubjectRegistry::href($t->taskable_type, $t->taskable_id),
             ]);
 
         $summary = [
@@ -102,7 +103,7 @@ class TaskController extends Controller
                 ->count(),
         ];
 
-        $users = User::orderBy('name')->get(['id', 'name'])->map(fn (User $u) => ['id' => $u->id, 'name' => $u->name]);
+        $users = User::optionsForSelect();
 
         return Inertia::render('Tasks/Index', [
             'tasks' => $tasks,
@@ -125,7 +126,7 @@ class TaskController extends Controller
     public function create(Request $request): Response
     {
         return Inertia::render('Tasks/Create', [
-            'users' => User::orderBy('name')->get(['id', 'name'])->map(fn (User $u) => ['id' => $u->id, 'name' => $u->name]),
+            'users' => User::optionsForSelect(),
             'priorities' => array_map(fn (TaskPriority $p) => ['value' => $p->value, 'label' => $p->label()], TaskPriority::cases()),
             'statuses' => array_map(fn (TaskStatus $s) => ['value' => $s->value, 'label' => $s->label()], TaskStatus::cases()),
             'taskable_options' => $this->buildTaskableOptions($request),
@@ -169,9 +170,9 @@ class TaskController extends Controller
                 'assignee' => $task->assignee ? ['id' => $task->assignee->id, 'name' => $task->assignee->name] : null,
                 'creator' => $task->creator ? ['id' => $task->creator->id, 'name' => $task->creator->name] : null,
                 'completer' => $task->completer ? ['id' => $task->completer->id, 'name' => $task->completer->name] : null,
-                'taskable_type' => $this->taskableTypeLabel($task->taskable_type),
-                'taskable_href' => $this->taskableHref($task),
-                'taskable_label' => $this->taskableLabel($task->taskable),
+                'taskable_type' => SubjectRegistry::label($task->taskable_type),
+                'taskable_href' => SubjectRegistry::href($task->taskable_type, $task->taskable_id),
+                'taskable_label' => SubjectRegistry::labelForInstance($task->taskable),
                 'created_at' => $task->created_at->toDateTimeString(),
             ],
         ]);
@@ -190,11 +191,11 @@ class TaskController extends Controller
                 'status' => $task->status->value,
                 'assigned_to' => $task->assigned_to,
                 'taskable_type' => $task->taskable_type
-                    ? $this->friendlyType($task->taskable_type)
+                    ? SubjectRegistry::type($task->taskable_type)
                     : null,
                 'taskable_id' => $task->taskable_id,
             ],
-            'users' => User::orderBy('name')->get(['id', 'name'])->map(fn (User $u) => ['id' => $u->id, 'name' => $u->name]),
+            'users' => User::optionsForSelect(),
             'priorities' => array_map(fn (TaskPriority $p) => ['value' => $p->value, 'label' => $p->label()], TaskPriority::cases()),
             'statuses' => array_map(fn (TaskStatus $s) => ['value' => $s->value, 'label' => $s->label()], TaskStatus::cases()),
             'taskable_options' => $this->buildTaskableOptions($request),
@@ -241,96 +242,26 @@ class TaskController extends Controller
      */
     private function buildTaskableOptions(Request $request): array
     {
-        $options = [];
+        $type = $request->string('taskable_type')->toString() ?: null;
+        $id = $request->integer('taskable_id') ?: null;
 
-        $type = $request->string('taskable_type')->toString();
-        $id = $request->integer('taskable_id');
+        return collect(SubjectRegistry::optionsFor([
+            Customer::class,
+            Lead::class,
+            Opportunity::class,
+            Sale::class,
+        ]))
+            ->map(function (array $info) use ($type, $id) {
+                $class = $info['class'];
+                $matchesFilter = $type === null || $type === $info['value'];
+                $model = $matchesFilter && $id ? $class::find($id) : null;
 
-        if ($type === 'customer' || ! $type) {
-            $model = $type === 'customer' && $id ? Customer::find($id) : null;
-            $options[] = [
-                'type' => 'customer',
-                'id' => $model?->id ?? 0,
-                'label' => $model?->name ?? '',
-            ];
-        }
-        if ($type === 'lead' || ! $type) {
-            $model = $type === 'lead' && $id ? Lead::find($id) : null;
-            $options[] = [
-                'type' => 'lead',
-                'id' => $model?->id ?? 0,
-                'label' => $model?->name ?? '',
-            ];
-        }
-        if ($type === 'opportunity' || ! $type) {
-            $model = $type === 'opportunity' && $id ? Opportunity::find($id) : null;
-            $options[] = [
-                'type' => 'opportunity',
-                'id' => $model?->id ?? 0,
-                'label' => $model?->name ?? '',
-            ];
-        }
-        if ($type === 'sale' || ! $type) {
-            $model = $type === 'sale' && $id ? Sale::find($id) : null;
-            $options[] = [
-                'type' => 'sale',
-                'id' => $model?->id ?? 0,
-                'label' => $model ? 'V-'.str_pad((string) $model->id, 6, '0', STR_PAD_LEFT) : '',
-            ];
-        }
-
-        return $options;
-    }
-
-    private function taskableTypeLabel(?string $type): ?string
-    {
-        return match ($type) {
-            'App\\Models\\Customer', 'customer' => 'Cliente',
-            'App\\Models\\Lead', 'lead' => 'Lead',
-            'App\\Models\\Opportunity', 'opportunity' => 'Oportunidad',
-            'App\\Models\\Sale', 'sale' => 'Venta',
-            default => null,
-        };
-    }
-
-    private function friendlyType(string $fqcn): string
-    {
-        return match ($fqcn) {
-            'App\\Models\\Customer' => 'customer',
-            'App\\Models\\Lead' => 'lead',
-            'App\\Models\\Opportunity' => 'opportunity',
-            'App\\Models\\Sale' => 'sale',
-            default => '',
-        };
-    }
-
-    private function taskableHref(Task $task): ?string
-    {
-        if (! $task->taskable_type || ! $task->taskable_id) {
-            return null;
-        }
-
-        return match ($task->taskable_type) {
-            'App\\Models\\Customer' => route('customers.show', $task->taskable_id),
-            'App\\Models\\Lead' => route('leads.show', $task->taskable_id),
-            'App\\Models\\Opportunity' => route('opportunities.show', $task->taskable_id),
-            'App\\Models\\Sale' => route('sales.show', $task->taskable_id),
-            default => null,
-        };
-    }
-
-    private function taskableLabel($model): ?string
-    {
-        if (! $model) {
-            return null;
-        }
-
-        return match (true) {
-            $model instanceof Customer => $model->name,
-            $model instanceof Lead => $model->name,
-            $model instanceof Opportunity => $model->name,
-            $model instanceof Sale => 'V-'.str_pad((string) $model->id, 6, '0', STR_PAD_LEFT),
-            default => '#'.$model->id,
-        };
+                return [
+                    'type' => $info['value'],
+                    'id' => $model?->id ?? 0,
+                    'label' => $model ? SubjectRegistry::labelForInstance($model) : '',
+                ];
+            })
+            ->all();
     }
 }

@@ -181,7 +181,7 @@ const handleReject = () => {
                         </div>
                         <div v-if="saleReturn.customer">
                             <p class="text-xs text-muted-foreground">Cliente</p>
-                            <Link :href="route('customers.show', saleReturn.customer.id)" class="font-medium hover:underline">
+                            <Link :href="route('customers.index')" class="font-medium hover:underline">
                                 {{ saleReturn.customer.name }}
                             </Link>
                         </div>
@@ -198,7 +198,7 @@ const handleReject = () => {
                             <Separator />
                             <div>
                                 <p class="text-xs text-muted-foreground">Nota de crédito</p>
-                                <Link :href="route('customers.show', saleReturn.customer?.id ?? 0)" class="font-mono text-sm hover:underline">
+                                <Link :href="route('customers.index')" class="font-mono text-sm hover:underline">
                                     {{ saleReturn.credit_note.folio }}
                                 </Link>
                                 <p class="text-xs text-muted-foreground">

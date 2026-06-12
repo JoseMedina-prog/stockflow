@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -46,28 +47,40 @@ class User extends Authenticatable
         return config("stockflow_permissions.roles.{$key}.label", ucfirst($key));
     }
 
-    public function leads(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function leads(): HasMany
     {
         return $this->hasMany(Lead::class, 'owner_id');
     }
 
-    public function oportunidades(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function opportunities(): HasMany
     {
         return $this->hasMany(Opportunity::class, 'owner_id');
     }
 
-    public function tasks(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function tasks(): HasMany
     {
         return $this->hasMany(Task::class, 'assigned_to');
     }
 
-    public function createdTasks(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function createdTasks(): HasMany
     {
         return $this->hasMany(Task::class, 'created_by');
     }
 
-    public function activities(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function activities(): HasMany
     {
         return $this->hasMany(Activity::class);
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string}>
+     */
+    public static function optionsForSelect(): array
+    {
+        return static::query()
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn (self $u) => ['id' => $u->id, 'name' => $u->name])
+            ->all();
     }
 }

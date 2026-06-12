@@ -235,7 +235,7 @@ const submit = () => {
                     </div>
                     <div class="flex items-center justify-end gap-2">
                         <Button variant="outline" as-child>
-                            <Link :href="route('purchases.show', purchase.id)">Cancelar</Link>
+                            <Link :href="route('purchases.index')">Cancelar</Link>
                         </Button>
                         <Button type="submit" :disabled="form.processing || total <= 0 || !form.supplier_id">
                             <Loader2 v-if="form.processing" class="mr-1 animate-spin" />

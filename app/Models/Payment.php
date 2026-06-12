@@ -62,13 +62,4 @@ class Payment extends Model
 
         return $query;
     }
-
-    /**
-     * @param  Builder<Payment>  $query
-     * @return Builder<Payment>
-     */
-    public function scopeOfMethod(Builder $query, PaymentMethod $method): Builder
-    {
-        return $query->where('method', $method->value);
-    }
 }

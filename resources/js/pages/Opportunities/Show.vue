@@ -196,7 +196,7 @@ const handleDeleteActivity = (id: number) => {
                         <Separator />
                         <div v-if="opportunity.customer">
                             <p class="text-xs text-muted-foreground">Cliente</p>
-                            <Link :href="route('customers.show', opportunity.customer.id)" class="font-medium hover:underline">
+                            <Link :href="route('customers.index')" class="font-medium hover:underline">
                                 {{ opportunity.customer.name }}
                             </Link>
                             <p v-if="opportunity.customer.email" class="text-xs text-muted-foreground">{{ opportunity.customer.email }}</p>

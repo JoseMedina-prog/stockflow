@@ -50,7 +50,7 @@ const submit = () => {
                 </div>
                 <div class="flex gap-2">
                     <Button variant="outline" as-child>
-                        <Link :href="route('customers.show', customer.id)">
+                        <Link :href="route('customers.index')">
                             <Eye class="mr-1" />
                             Ver ficha
                         </Link>
