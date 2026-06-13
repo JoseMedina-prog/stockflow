@@ -58,25 +58,22 @@ const platformItems = computed<NavItem[]>(() =>
     ].filter((i) => can(i.permission)),
 );
 
-const erpItems = computed<NavItem[]>(() =>
+const ventasItems = computed<NavItem[]>(() =>
     [
         { title: 'Compras', href: '/purchases', icon: ShoppingBag, permission: 'purchases.view_any' },
+        { title: 'Prospectos', href: '/leads', icon: UserPlus, permission: 'leads.view_any' },
+        { title: 'Oportunidades', href: '/opportunities', icon: Target, permission: 'opportunities.view_any' },
+        { title: 'Cotizaciones', href: '/quotes', icon: FileText, permission: 'quotes.view_any' },
         { title: 'Ventas', href: '/sales', icon: ShoppingCart, permission: 'sales.view_any' },
         { title: 'Devoluciones', href: '/returns', icon: Undo2, permission: 'returns.view_any' },
+        { title: 'Tareas', href: '/tasks', icon: CheckSquare, permission: 'tasks.view_any' },
+        { title: 'Actividades', href: '/activities', icon: Activity, permission: 'activities.view_any' },
         { title: 'Pagos', href: '/payments', icon: CreditCard, permission: 'payments.view_any' },
         { title: 'Movimientos', href: '/stock-movements', icon: ArrowLeftRight, permission: 'stock_movements.view_any' },
     ].filter((i) => can(i.permission)),
 );
 
-const crmItems = computed<NavItem[]>(() =>
-    [
-        { title: 'Leads', href: '/leads', icon: UserPlus, permission: 'leads.view_any' },
-        { title: 'Oportunidades', href: '/opportunities', icon: Target, permission: 'opportunities.view_any' },
-        { title: 'Cotizaciones', href: '/quotes', icon: FileText, permission: 'quotes.view_any' },
-        { title: 'Tareas', href: '/tasks', icon: CheckSquare, permission: 'tasks.view_any' },
-        { title: 'Actividades', href: '/activities', icon: Activity, permission: 'activities.view_any' },
-    ].filter((i) => can(i.permission)),
-);
+const crmItems = computed<NavItem[]>(() => []);
 
 const reportsItem = computed(() =>
     can('reports.view_any') ? { title: 'Reportes', href: '/reports', icon: BarChart3, permission: 'reports.view_any' } : null,
@@ -122,8 +119,7 @@ const CommandPalette = defineAsyncComponent(() => import('@/components/stockflow
 
         <SidebarContent>
             <NavMain v-if="platformItems.length" label="Plataforma" :items="platformItems" />
-            <NavMain v-if="erpItems.length" label="Operaciones" :items="erpItems" />
-            <NavMain v-if="crmItems.length" label="CRM" :items="crmItems" />
+            <NavMain v-if="ventasItems.length" label="Ventas" :items="ventasItems" />
             <NavMain v-if="accountingItems.length" label="Contabilidad" :items="accountingItems" />
             <NavMain v-if="reportsItem" label="Análisis" :items="[reportsItem]" />
         </SidebarContent>

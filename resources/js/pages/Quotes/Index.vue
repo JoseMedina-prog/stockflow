@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ConfirmDialog from '@/components/stockflow/ConfirmDialog.vue';
 import EmptyState from '@/components/stockflow/EmptyState.vue';
 import PageHeader from '@/components/stockflow/PageHeader.vue';
 import StatCard from '@/components/stockflow/StatCard.vue';
@@ -11,7 +12,7 @@ import { formatCurrency, formatDate } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { Check, CircleDollarSign, FileText, Plus, Search, X } from 'lucide-vue-next';
+import { Check, CircleDollarSign, Eye, FileText, Pencil, Plus, Search, Trash2, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
 interface QuoteListItem {
@@ -26,6 +27,8 @@ interface QuoteListItem {
     status: string;
     status_label: string;
     status_badge: string;
+    can_be_edited: boolean;
+    can_be_deleted: boolean;
     items_count: number;
     customer: { id: number; name: string } | null;
     opportunity: { id: number; name: string } | null;
@@ -63,6 +66,7 @@ const props = defineProps<{
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Tablero', href: '/dashboard' },
+    { title: 'Ventas', href: '/sales' },
     { title: 'Cotizaciones', href: '/quotes' },
 ];
 
@@ -98,6 +102,28 @@ const applyFilters = () => {
 
 const clearFilters = () => {
     router.get(route('quotes.index'), {}, { preserveScroll: true });
+};
+
+const confirmOpen = ref(false);
+const processing = ref(false);
+const target = ref<QuoteListItem | null>(null);
+
+const askDelete = (q: QuoteListItem) => {
+    target.value = q;
+    confirmOpen.value = true;
+};
+
+const handleDelete = () => {
+    if (!target.value) return;
+    processing.value = true;
+    router.delete(route('quotes.destroy', target.value.id), {
+        preserveScroll: true,
+        onFinish: () => {
+            processing.value = false;
+            confirmOpen.value = false;
+            target.value = null;
+        },
+    });
 };
 </script>
 
@@ -182,6 +208,7 @@ const clearFilters = () => {
                             <TableHead class="text-center">Items</TableHead>
                             <TableHead class="text-right">Total</TableHead>
                             <TableHead>Estado</TableHead>
+                            <TableHead class="w-32 text-right">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -209,6 +236,29 @@ const clearFilters = () => {
                             <TableCell>
                                 <Badge :variant="q.status_badge as any">{{ q.status_label }}</Badge>
                             </TableCell>
+                            <TableCell class="text-right">
+                                <div class="flex justify-end gap-1">
+                                    <Button variant="ghost" size="icon" as-child>
+                                        <Link :href="route('quotes.show', q.id)">
+                                            <Eye />
+                                        </Link>
+                                    </Button>
+                                    <Button v-if="q.can_be_edited" variant="ghost" size="icon" as-child>
+                                        <Link :href="route('quotes.edit', q.id)">
+                                            <Pencil />
+                                        </Link>
+                                    </Button>
+                                    <Button
+                                        v-if="q.can_be_deleted"
+                                        variant="ghost"
+                                        size="icon"
+                                        class="text-destructive hover:text-destructive"
+                                        @click="askDelete(q)"
+                                    >
+                                        <Trash2 />
+                                    </Button>
+                                </div>
+                            </TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -224,5 +274,13 @@ const clearFilters = () => {
 
             <Pagination v-if="quotes.data.length > 0" :links="quotes.links" />
         </div>
+
+        <ConfirmDialog
+            v-model:open="confirmOpen"
+            title="Eliminar cotización"
+            :description="`¿Estás seguro de eliminar la cotización «${target?.folio}»? Esta acción no se puede deshacer.`"
+            :processing="processing"
+            @confirm="handleDelete"
+        />
     </AppLayout>
 </template>

@@ -8,7 +8,7 @@ import { formatCurrency } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ArrowLeft, Loader2, Plus, Search, Trash2 } from 'lucide-vue-next';
+import { AlertCircle, ArrowLeft, Loader2, Plus, Search, Trash2 } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
 interface ProductOption {
@@ -58,6 +58,7 @@ const props = defineProps<{
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Tablero', href: '/dashboard' },
+    { title: 'Ventas', href: '/sales' },
     { title: 'Cotizaciones', href: '/quotes' },
     { title: 'Nueva', href: '/quotes/create' },
 ];
@@ -82,7 +83,7 @@ const form = useForm<{
     tax: 0,
     status: props.defaults.status,
     notes: '',
-    terms: 'Precios en MXN. Vigencia de la cotización según la fecha indicada. Una vez aceptada, se requiere anticipo del 50% para iniciar el pedido.',
+    terms: 'Precios en pesos. Vigencia de la cotización según la fecha indicada. Una vez aceptada, se requiere anticipo del 50% para iniciar el pedido.',
     items: [{ product_id: null, description: '', quantity: 1, price: 0, discount_percent: 0 }],
 });
 
@@ -135,6 +136,34 @@ watch(() => form.opportunity_id, onOpportunityIdChange);
 const submit = () => {
     form.post(route('quotes.store'), { preserveScroll: true });
 };
+
+const humanizeField = (field: string): string => {
+    const labels: Record<string, string> = {
+        quote_date: 'Fecha',
+        valid_until: 'Vigente hasta',
+        customer_id: 'Cliente',
+        opportunity_id: 'Oportunidad',
+        status: 'Estado',
+        discount: 'Descuento global',
+        tax: 'Impuestos',
+        items: 'Conceptos',
+        notes: 'Notas',
+        terms: 'Términos',
+    };
+    if (labels[field]) return labels[field];
+    const itemMatch = field.match(/^items\.(\d+)\.(\w+)$/);
+    if (itemMatch) {
+        const itemLabels: Record<string, string> = {
+            description: 'descripción',
+            quantity: 'cantidad',
+            price: 'precio',
+            discount_percent: 'descuento %',
+            product_id: 'producto',
+        };
+        return `Concepto #${Number(itemMatch[1]) + 1} · ${itemLabels[itemMatch[2]] ?? itemMatch[2]}`;
+    }
+    return field;
+};
 </script>
 
 <template>
@@ -154,6 +183,19 @@ const submit = () => {
             </PageHeader>
 
             <form @submit.prevent="submit" class="space-y-5">
+                <div
+                    v-if="form.errors && Object.keys(form.errors).length > 0"
+                    class="flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive"
+                >
+                    <AlertCircle class="mt-0.5 size-5 shrink-0" />
+                    <div>
+                        <p class="font-semibold">No pudimos guardar la cotización. Revisa los siguientes campos:</p>
+                        <ul class="mt-1 list-inside list-disc space-y-0.5">
+                            <li v-for="(message, field) in form.errors" :key="field">{{ humanizeField(String(field)) }}: {{ message }}</li>
+                        </ul>
+                    </div>
+                </div>
+
                 <div class="grid gap-4 md:grid-cols-3">
                     <div class="space-y-2">
                         <Label for="customer_id">Cliente</Label>
@@ -165,6 +207,7 @@ const submit = () => {
                             <option :value="null">Consumidor final / sin cliente</option>
                             <option v-for="c in customers" :key="c.id" :value="c.id">{{ c.name }}</option>
                         </select>
+                        <p v-if="form.errors.customer_id" class="text-xs text-destructive">{{ form.errors.customer_id }}</p>
                     </div>
                     <div class="space-y-2">
                         <Label for="opportunity_id">Oportunidad (opcional)</Label>
@@ -172,6 +215,7 @@ const submit = () => {
                         <p v-if="opportunity && form.opportunity_id === opportunity.id" class="text-xs text-muted-foreground">
                             Origen: {{ opportunity.name }}
                         </p>
+                        <p v-if="form.errors.opportunity_id" class="text-xs text-destructive">{{ form.errors.opportunity_id }}</p>
                     </div>
                     <div class="space-y-2">
                         <Label>Estado</Label>
@@ -179,18 +223,22 @@ const submit = () => {
                             <option value="draft">Borrador</option>
                             <option value="sent">Enviada</option>
                         </select>
+                        <p v-if="form.errors.status" class="text-xs text-destructive">{{ form.errors.status }}</p>
                     </div>
                     <div class="space-y-2">
                         <Label for="quote_date">Fecha</Label>
                         <Input id="quote_date" v-model="form.quote_date" type="date" required />
+                        <p v-if="form.errors.quote_date" class="text-xs text-destructive">{{ form.errors.quote_date }}</p>
                     </div>
                     <div class="space-y-2">
                         <Label for="valid_until">Vigente hasta</Label>
                         <Input id="valid_until" v-model="form.valid_until" type="date" />
+                        <p v-if="form.errors.valid_until" class="text-xs text-destructive">{{ form.errors.valid_until }}</p>
                     </div>
                     <div class="space-y-2">
                         <Label for="discount">Descuento global</Label>
                         <Input id="discount" v-model.number="form.discount" type="number" min="0" step="0.01" />
+                        <p v-if="form.errors.discount" class="text-xs text-destructive">{{ form.errors.discount }}</p>
                     </div>
                 </div>
 
@@ -202,6 +250,9 @@ const submit = () => {
                             Agregar concepto
                         </Button>
                     </div>
+                    <p v-if="form.errors.items" class="border-b border-border/60 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+                        {{ form.errors.items }}
+                    </p>
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -239,13 +290,22 @@ const submit = () => {
                                             </div>
                                         </details>
                                         <p v-if="item.product_id" class="text-xs text-muted-foreground">Catálogo #{{ item.product_id }}</p>
+                                        <p v-if="form.errors[`items.${idx}.description`]" class="text-xs text-destructive">
+                                            {{ form.errors[`items.${idx}.description`] }}
+                                        </p>
                                     </div>
                                 </TableCell>
                                 <TableCell>
                                     <Input v-model.number="item.quantity" type="number" min="1" class="h-9 text-center" />
+                                    <p v-if="form.errors[`items.${idx}.quantity`]" class="mt-1 text-xs text-destructive">
+                                        {{ form.errors[`items.${idx}.quantity`] }}
+                                    </p>
                                 </TableCell>
                                 <TableCell>
                                     <Input v-model.number="item.price" type="number" min="0" step="0.01" class="h-9 text-right" />
+                                    <p v-if="form.errors[`items.${idx}.price`]" class="mt-1 text-xs text-destructive">
+                                        {{ form.errors[`items.${idx}.price`] }}
+                                    </p>
                                 </TableCell>
                                 <TableCell>
                                     <Input
@@ -256,6 +316,9 @@ const submit = () => {
                                         step="0.01"
                                         class="h-9 text-right"
                                     />
+                                    <p v-if="form.errors[`items.${idx}.discount_percent`]" class="mt-1 text-xs text-destructive">
+                                        {{ form.errors[`items.${idx}.discount_percent`] }}
+                                    </p>
                                 </TableCell>
                                 <TableCell class="text-right font-semibold tabular-nums">
                                     {{ formatCurrency(lineTotal(item)) }}

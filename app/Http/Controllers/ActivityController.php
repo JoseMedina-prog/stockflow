@@ -20,6 +20,7 @@ use Inertia\Response;
 class ActivityController extends Controller
 {
     public const CUSTOM_ACTIONS = [
+        ['index', 'get', 'activities', 'activities.view_any', 'activities.index'],
         ['destroy', 'delete', 'activities/{activity}', 'activities.update', 'activities.destroy'],
         ['storeForCustomer', 'post', 'customers/{customer}/activities', 'activities.create', 'customers.activities.store'],
         ['storeForLead', 'post', 'leads/{lead}/activities', 'activities.create', 'leads.activities.store'],

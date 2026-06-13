@@ -19,6 +19,7 @@ use Inertia\Response;
 class OpportunityController extends Controller
 {
     public const CUSTOM_ACTIONS = [
+        ['show', 'get', 'opportunities/{opportunity}', 'opportunities.view', 'opportunities.show'],
         ['advance', 'post', 'opportunities/{opportunity}/advance', 'opportunities.update', 'opportunities.advance'],
     ];
 

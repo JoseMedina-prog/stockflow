@@ -18,6 +18,7 @@ use Inertia\Response;
 class LeadController extends Controller
 {
     public const CUSTOM_ACTIONS = [
+        ['show', 'get', 'leads/{lead}', 'leads.view', 'leads.show'],
         ['convert', 'post', 'leads/{lead}/convert', 'leads.update', 'leads.convert'],
         ['markLost', 'post', 'leads/{lead}/mark-lost', 'leads.update', 'leads.mark-lost'],
     ];
@@ -132,7 +133,7 @@ class LeadController extends Controller
         $lead = Lead::create($data);
 
         return to_route('leads.show', $lead)
-            ->with('success', "Lead «{$lead->name}» creado correctamente.");
+            ->with('success', "Prospecto «{$lead->name}» creado correctamente.");
     }
 
     public function show(Lead $lead): Response
@@ -250,7 +251,7 @@ class LeadController extends Controller
         $lead->update($request->validated());
 
         return to_route('leads.show', $lead)
-            ->with('success', "Lead «{$lead->name}» actualizado.");
+            ->with('success', "Prospecto «{$lead->name}» actualizado.");
     }
 
     public function destroy(Lead $lead): RedirectResponse
@@ -264,7 +265,7 @@ class LeadController extends Controller
         $lead->delete();
 
         return to_route('leads.index')
-            ->with('success', "Lead «{$name}» eliminado.");
+            ->with('success', "Prospecto «{$name}» eliminado.");
     }
 
     public function convert(Request $request, Lead $lead): RedirectResponse
@@ -277,7 +278,7 @@ class LeadController extends Controller
         $customer = $this->converter->convert($lead, $request->user(), $request->only(['name', 'email', 'phone', 'address']));
 
         return to_route('customers.index')
-            ->with('success', "Lead convertido. Cliente «{$customer->name}» creado.");
+            ->with('success', "Prospecto convertido. Cliente «{$customer->name}» creado.");
     }
 
     public function markLost(Request $request, Lead $lead): RedirectResponse
@@ -297,6 +298,6 @@ class LeadController extends Controller
         ]);
 
         return to_route('leads.show', $lead)
-            ->with('success', 'Lead marcado como perdido.');
+            ->with('success', 'Prospecto marcado como perdido.');
     }
 }

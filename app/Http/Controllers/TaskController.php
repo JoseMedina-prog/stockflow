@@ -22,6 +22,7 @@ use Inertia\Response;
 class TaskController extends Controller
 {
     public const CUSTOM_ACTIONS = [
+        ['show', 'get', 'tasks/{task}', 'tasks.view', 'tasks.show'],
         ['complete', 'post', 'tasks/{task}/complete', 'tasks.update', 'tasks.complete'],
     ];
 
@@ -88,8 +89,8 @@ class TaskController extends Controller
                 'completed_at' => $t->completed_at?->toDateTimeString(),
                 'assignee' => $t->assignee ? ['id' => $t->assignee->id, 'name' => $t->assignee->name] : null,
                 'creator' => $t->creator ? ['id' => $t->creator->id, 'name' => $t->creator->name] : null,
-                'taskable_type' => SubjectRegistry::label($t->taskable_type),
-                'taskable_href' => SubjectRegistry::href($t->taskable_type, $t->taskable_id),
+                'taskable_type' => $t->taskable_type ? SubjectRegistry::label($t->taskable_type) : null,
+                'taskable_href' => $t->taskable_type ? SubjectRegistry::href($t->taskable_type, $t->taskable_id) : null,
             ]);
 
         $summary = [
@@ -170,9 +171,9 @@ class TaskController extends Controller
                 'assignee' => $task->assignee ? ['id' => $task->assignee->id, 'name' => $task->assignee->name] : null,
                 'creator' => $task->creator ? ['id' => $task->creator->id, 'name' => $task->creator->name] : null,
                 'completer' => $task->completer ? ['id' => $task->completer->id, 'name' => $task->completer->name] : null,
-                'taskable_type' => SubjectRegistry::label($task->taskable_type),
-                'taskable_href' => SubjectRegistry::href($task->taskable_type, $task->taskable_id),
-                'taskable_label' => SubjectRegistry::labelForInstance($task->taskable),
+                'taskable_type' => $task->taskable_type ? SubjectRegistry::label($task->taskable_type) : null,
+                'taskable_href' => $task->taskable_type ? SubjectRegistry::href($task->taskable_type, $task->taskable_id) : null,
+                'taskable_label' => $task->taskable ? SubjectRegistry::labelForInstance($task->taskable) : null,
                 'created_at' => $task->created_at->toDateTimeString(),
             ],
         ]);

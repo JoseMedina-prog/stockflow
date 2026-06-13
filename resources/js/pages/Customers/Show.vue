@@ -500,7 +500,7 @@ const daysSinceLastPurchase = (): string => {
 
             <Card v-if="convertedLeads.length > 0">
                 <CardHeader>
-                    <CardTitle class="text-base">Leads convertidos</CardTitle>
+                    <CardTitle class="text-base">Prospectos convertidos</CardTitle>
                     <CardDescription>Prospectos que se convirtieron en este cliente.</CardDescription>
                 </CardHeader>
                 <CardContent>

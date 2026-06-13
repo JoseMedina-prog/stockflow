@@ -10,7 +10,7 @@ import { formatCurrency } from '@/composables/useFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { Pencil, Plus, Search, ShoppingBag, X } from 'lucide-vue-next';
+import { Eye, Pencil, Plus, Search, ShoppingBag, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
 interface PurchaseItem {
@@ -184,6 +184,11 @@ const clearFilters = () => {
                             </TableCell>
                             <TableCell class="text-right">
                                 <div class="flex justify-end gap-1">
+                                    <Button variant="ghost" size="icon" as-child>
+                                        <Link :href="route('purchases.show', purchase.id)">
+                                            <Eye />
+                                        </Link>
+                                    </Button>
                                     <Button v-if="purchase.status === 'pending'" variant="ghost" size="icon" as-child>
                                         <Link :href="route('purchases.edit', purchase.id)">
                                             <Pencil />

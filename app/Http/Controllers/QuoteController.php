@@ -27,6 +27,7 @@ use Inertia\Response;
 class QuoteController extends Controller
 {
     public const CUSTOM_ACTIONS = [
+        ['show', 'get', 'quotes/{quote}', 'quotes.view', 'quotes.show'],
         ['send', 'post', 'quotes/{quote}/send', 'quotes.update', 'quotes.send'],
         ['accept', 'post', 'quotes/{quote}/accept', 'quotes.update', 'quotes.accept'],
         ['reject', 'post', 'quotes/{quote}/reject', 'quotes.update', 'quotes.reject'],
@@ -78,6 +79,8 @@ class QuoteController extends Controller
                 'status' => $q->status->value,
                 'status_label' => $q->status->label(),
                 'status_badge' => $q->status->badgeVariant(),
+                'can_be_edited' => $q->status->canBeEdited(),
+                'can_be_deleted' => $q->status !== QuoteStatus::Converted,
                 'items_count' => $q->items_count,
                 'customer' => $q->customer ? ['id' => $q->customer->id, 'name' => $q->customer->name] : null,
                 'opportunity' => $q->opportunity ? ['id' => $q->opportunity->id, 'name' => $q->opportunity->name] : null,

@@ -19,6 +19,7 @@ use Inertia\Response;
 class PurchaseController extends Controller
 {
     public const CUSTOM_ACTIONS = [
+        ['show', 'get', 'purchases/{purchase}', 'purchases.view', 'purchases.show'],
         ['receive', 'post', 'purchases/{purchase}/receive', 'purchases.update', 'purchases.receive'],
         ['cancel', 'post', 'purchases/{purchase}/cancel', 'purchases.update', 'purchases.cancel'],
     ];

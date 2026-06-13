@@ -23,7 +23,7 @@ class LeadConversionService
             $locked = Lead::query()->lockForUpdate()->findOrFail($lead->id);
 
             if ($locked->isConverted()) {
-                throw new \DomainException("El lead «{$locked->name}» ya fue convertido.");
+                throw new \DomainException("El prospecto «{$locked->name}» ya fue convertido.");
             }
 
             $customer = Customer::create([

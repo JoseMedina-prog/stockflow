@@ -28,6 +28,7 @@ const props = defineProps<{
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Tablero', href: '/dashboard' },
+    { title: 'Ventas', href: '/sales' },
     { title: 'Oportunidades', href: '/opportunities' },
     { title: 'Nueva', href: '/opportunities/create' },
 ];
@@ -95,7 +96,7 @@ const submit = () => {
                         </select>
                     </div>
                     <div class="space-y-2">
-                        <Label for="amount">Monto (MXN)</Label>
+                        <Label for="amount">Monto ($)</Label>
                         <Input id="amount" v-model="form.amount" type="number" step="0.01" min="0" required />
                         <p v-if="form.errors.amount" class="text-sm text-destructive">{{ form.errors.amount }}</p>
                     </div>

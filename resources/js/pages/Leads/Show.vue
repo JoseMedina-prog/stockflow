@@ -83,7 +83,8 @@ const { can } = usePermissions();
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Tablero', href: '/dashboard' },
-    { title: 'Leads', href: '/leads' },
+    { title: 'Ventas', href: '/sales' },
+    { title: 'Prospectos', href: '/leads' },
     { title: props.lead.name, href: `/leads/${props.lead.id}` },
 ];
 
@@ -132,12 +133,12 @@ const handleDeleteActivity = (id: number) => {
 </script>
 
 <template>
-    <Head :title="`Lead · ${lead.name}`" />
+    <Head :title="`Prospecto · ${lead.name}`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
             <div class="flex flex-wrap items-start justify-between gap-2">
-                <PageHeader :title="lead.name" :description="`Lead creado el ${formatDateTime(lead.created_at)}.`">
+                <PageHeader :title="lead.name" :description="`Prospecto creado el ${formatDateTime(lead.created_at)}.`">
                     <template #actions>
                         <Button variant="outline" as-child>
                             <Link :href="route('leads.index')">
@@ -173,7 +174,7 @@ const handleDeleteActivity = (id: number) => {
             >
                 <p class="flex items-center gap-2 font-medium">
                     <Check class="size-4" />
-                    Lead convertido a cliente
+                    Prospecto convertido a cliente
                 </p>
                 <p class="mt-1 text-xs">
                     <Link :href="route('customers.index')" class="font-semibold hover:underline">
@@ -268,7 +269,7 @@ const handleDeleteActivity = (id: number) => {
         <div v-if="convertOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="convertOpen = false">
             <div class="w-full max-w-md rounded-lg bg-card p-6 shadow-xl">
                 <h2 class="text-lg font-semibold">Convertir a cliente</h2>
-                <p class="mt-1 text-sm text-muted-foreground">Se creará un cliente con estos datos. El lead cambiará a etapa «Ganado».</p>
+                <p class="mt-1 text-sm text-muted-foreground">Se creará un cliente con estos datos. El prospecto cambiará a etapa «Ganado».</p>
                 <form @submit.prevent="handleConvert" class="mt-4 space-y-4">
                     <div class="space-y-2">
                         <Label for="convert_name">Nombre</Label>
@@ -300,7 +301,7 @@ const handleDeleteActivity = (id: number) => {
         <div v-if="lostOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="lostOpen = false">
             <div class="w-full max-w-md rounded-lg bg-card p-6 shadow-xl">
                 <h2 class="text-lg font-semibold">Marcar como perdido</h2>
-                <p class="mt-1 text-sm text-muted-foreground">El lead cambiará a etapa «Perdido». Indica el motivo para futuras referencias.</p>
+                <p class="mt-1 text-sm text-muted-foreground">El prospecto cambiará a etapa «Perdido». Indica el motivo para futuras referencias.</p>
                 <form @submit.prevent="handleMarkLost" class="mt-4 space-y-4">
                     <div class="space-y-2">
                         <Label for="rejection_reason">Motivo</Label>
@@ -328,7 +329,7 @@ const handleDeleteActivity = (id: number) => {
             v-model:open="activityOpen"
             :types="activity_types"
             :post-url="route('leads.activities.store', lead.id)"
-            :description="`Actividad sobre el lead «${lead.name}».`"
+            :description="`Actividad sobre el prospecto «${lead.name}».`"
         />
     </AppLayout>
 </template>

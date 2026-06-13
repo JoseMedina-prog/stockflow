@@ -43,6 +43,7 @@ const { can } = usePermissions();
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Tablero', href: '/dashboard' },
+    { title: 'Ventas', href: '/sales' },
     { title: 'Tareas', href: '/tasks' },
     { title: props.task.title, href: `/tasks/${props.task.id}` },
 ];

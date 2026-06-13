@@ -77,11 +77,7 @@ watch(
                     v-for="t in toasts"
                     :key="t.id"
                     class="pointer-events-auto flex w-full max-w-md items-start gap-3 rounded-lg border bg-card px-4 py-3 shadow-xl ring-1 ring-black/5 dark:ring-white/10"
-                    :class="
-                        t.type === 'success'
-                            ? 'border-emerald-200/80 dark:border-emerald-800/60'
-                            : 'border-destructive/40'
-                    "
+                    :class="t.type === 'success' ? 'border-emerald-200/80 dark:border-emerald-800/60' : 'border-destructive/40'"
                     role="status"
                 >
                     <component

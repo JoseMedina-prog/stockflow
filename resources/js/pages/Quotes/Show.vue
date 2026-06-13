@@ -60,6 +60,7 @@ const { can } = usePermissions();
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Tablero', href: '/dashboard' },
+    { title: 'Ventas', href: '/sales' },
     { title: 'Cotizaciones', href: '/quotes' },
     { title: props.quote.folio, href: `/quotes/${props.quote.id}` },
 ];

@@ -80,7 +80,8 @@ const props = defineProps<{
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Tablero', href: '/dashboard' },
-    { title: 'Leads', href: '/leads' },
+    { title: 'Ventas', href: '/sales' },
+    { title: 'Prospectos', href: '/leads' },
 ];
 
 const view = ref<'table' | 'kanban'>('table');
@@ -142,12 +143,12 @@ const handleDelete = () => {
 </script>
 
 <template>
-    <Head title="Leads" />
+    <Head title="Prospectos" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
             <PageHeader
-                title="Leads"
+                title="Prospectos"
                 description="Gestiona tu embudo de prospección: nuevos, contactados, calificados, propuestas, ganados y perdidos."
             >
                 <template #actions>
@@ -169,7 +170,7 @@ const handleDelete = () => {
                     <Button as-child>
                         <Link :href="route('leads.create')">
                             <Plus class="mr-1" />
-                            Nuevo lead
+                            Nuevo prospecto
                         </Link>
                     </Button>
                 </template>
@@ -294,11 +295,11 @@ const handleDelete = () => {
                 <EmptyState
                     v-else-if="!hasFilters()"
                     :icon="UserPlus"
-                    title="Sin leads todavía"
-                    description="Registra tu primer lead para empezar a construir tu embudo."
-                    :action="{ label: 'Nuevo lead', href: route('leads.create') }"
+                    title="Sin prospectos todavía"
+                    description="Registra tu primer prospecto para empezar a construir tu embudo."
+                    :action="{ label: 'Nuevo prospecto', href: route('leads.create') }"
                 />
-                <EmptyState v-else :icon="Search" title="Sin resultados" description="No encontramos leads con ese criterio." />
+                <EmptyState v-else :icon="Search" title="Sin resultados" description="No encontramos prospectos con ese criterio." />
             </div>
 
             <div v-else class="flex gap-3 overflow-x-auto pb-2">
@@ -333,7 +334,7 @@ const handleDelete = () => {
                         v-if="!kanban[s.value] || kanban[s.value].length === 0"
                         class="rounded-md border border-dashed border-border/60 p-3 text-center text-xs text-muted-foreground"
                     >
-                        Arrastra un lead aquí
+                        Sin prospectos en esta etapa
                     </div>
                 </div>
             </div>
@@ -343,8 +344,8 @@ const handleDelete = () => {
 
         <ConfirmDialog
             v-model:open="confirmOpen"
-            title="Eliminar lead"
-            :description="`¿Estás seguro de eliminar el lead «${target?.name}»? Esta acción no se puede deshacer.`"
+            title="Eliminar prospecto"
+            :description="`¿Estás seguro de eliminar el prospecto «${target?.name}»? Esta acción no se puede deshacer.`"
             :processing="processing"
             @confirm="handleDelete"
         />

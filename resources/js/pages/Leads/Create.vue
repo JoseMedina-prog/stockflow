@@ -28,7 +28,8 @@ const props = defineProps<{
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Tablero', href: '/dashboard' },
-    { title: 'Leads', href: '/leads' },
+    { title: 'Ventas', href: '/sales' },
+    { title: 'Prospectos', href: '/leads' },
     { title: 'Nuevo', href: '/leads/create' },
 ];
 
@@ -51,12 +52,12 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Nuevo lead" />
+    <Head title="Nuevo prospecto" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="mx-auto w-full max-w-2xl p-4">
             <div class="mb-6">
-                <h1 class="text-2xl font-semibold tracking-tight">Nuevo lead</h1>
+                <h1 class="text-2xl font-semibold tracking-tight">Nuevo prospecto</h1>
                 <p class="mt-1 text-sm text-muted-foreground">Registra un prospecto en el embudo de ventas.</p>
             </div>
 
@@ -108,7 +109,7 @@ const submit = () => {
 
                 <div class="grid gap-5 sm:grid-cols-2">
                     <div class="space-y-2">
-                        <Label for="estimated_value">Valor estimado (MXN)</Label>
+                        <Label for="estimated_value">Valor estimado ($)</Label>
                         <Input id="estimated_value" v-model="form.estimated_value" type="number" step="0.01" min="0" />
                         <p v-if="form.errors.estimated_value" class="text-sm text-destructive">{{ form.errors.estimated_value }}</p>
                     </div>
@@ -145,7 +146,7 @@ const submit = () => {
                     </Button>
                     <Button type="submit" :disabled="form.processing">
                         <Loader2 v-if="form.processing" class="mr-1 animate-spin" />
-                        Crear lead
+                        Crear prospecto
                     </Button>
                 </div>
             </form>

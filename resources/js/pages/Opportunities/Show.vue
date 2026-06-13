@@ -83,6 +83,7 @@ const { can } = usePermissions();
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Tablero', href: '/dashboard' },
+    { title: 'Ventas', href: '/sales' },
     { title: 'Oportunidades', href: '/opportunities' },
     { title: props.opportunity.name, href: `/opportunities/${props.opportunity.id}` },
 ];
@@ -207,7 +208,7 @@ const handleDeleteActivity = (id: number) => {
                         </div>
                         <div v-if="opportunity.lead">
                             <Separator />
-                            <p class="text-xs text-muted-foreground">Lead de origen</p>
+                            <p class="text-xs text-muted-foreground">Prospecto de origen</p>
                             <Link :href="route('leads.show', opportunity.lead.id)" class="font-medium hover:underline">
                                 {{ opportunity.lead.name }}
                             </Link>

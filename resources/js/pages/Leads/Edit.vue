@@ -43,7 +43,8 @@ const props = defineProps<{
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Tablero', href: '/dashboard' },
-    { title: 'Leads', href: '/leads' },
+    { title: 'Ventas', href: '/sales' },
+    { title: 'Prospectos', href: '/leads' },
     { title: 'Editar', href: `/leads/${props.lead.id}/edit` },
 ];
 
@@ -66,12 +67,12 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Editar lead" />
+    <Head title="Editar prospecto" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="mx-auto w-full max-w-2xl p-4">
             <div class="mb-6">
-                <h1 class="text-2xl font-semibold tracking-tight">Editar lead</h1>
+                <h1 class="text-2xl font-semibold tracking-tight">Editar prospecto</h1>
                 <p class="mt-1 text-sm text-muted-foreground">Actualiza los datos del prospecto.</p>
             </div>
 
@@ -120,7 +121,7 @@ const submit = () => {
 
                 <div class="grid gap-5 sm:grid-cols-2">
                     <div class="space-y-2">
-                        <Label for="estimated_value">Valor estimado (MXN)</Label>
+                        <Label for="estimated_value">Valor estimado ($)</Label>
                         <Input id="estimated_value" v-model="form.estimated_value" type="number" step="0.01" min="0" />
                     </div>
                     <div class="space-y-2">

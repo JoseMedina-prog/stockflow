@@ -48,6 +48,7 @@ const props = defineProps<{
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Tablero', href: '/dashboard' },
+    { title: 'Ventas', href: '/sales' },
     { title: 'Tareas', href: '/tasks' },
     { title: 'Editar', href: `/tasks/${props.task.id}/edit` },
 ];
@@ -154,7 +155,7 @@ const submit = () => {
                             >
                                 <option value="">Sin relación</option>
                                 <option value="customer">Cliente</option>
-                                <option value="lead">Lead</option>
+                                <option value="lead">Prospecto</option>
                                 <option value="opportunity">Oportunidad</option>
                                 <option value="sale">Venta</option>
                             </select>
