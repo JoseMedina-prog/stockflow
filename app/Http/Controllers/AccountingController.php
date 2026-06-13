@@ -170,8 +170,8 @@ class AccountingController extends Controller
             });
 
         $totals = [
-            'debit' => array_sum(array_column($accounts, 'debit')),
-            'credit' => array_sum(array_column($accounts, 'credit')),
+            'debit' => $accounts->sum('debit'),
+            'credit' => $accounts->sum('credit'),
         ];
 
         return Inertia::render('Accounting/TrialBalance', [

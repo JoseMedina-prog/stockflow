@@ -3,6 +3,8 @@ import ConfirmDialog from '@/components/stockflow/ConfirmDialog.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatCurrency, formatDate, formatDateTime } from '@/composables/useFormat';
@@ -10,7 +12,7 @@ import { usePermissions } from '@/composables/usePermissions';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ArrowLeft, Check, CheckCircle, Edit, Mail, Phone, Printer, Send, ShoppingCart, Trash2, X } from 'lucide-vue-next';
+import { ArrowLeft, Check, CheckCircle, Edit, Loader2, Mail, Phone, Printer, Send, ShoppingCart, Trash2, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 interface QuoteData {
@@ -66,6 +68,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const confirmDeleteOpen = ref(false);
+const confirmConvertOpen = ref(false);
+const confirmRejectOpen = ref(false);
+const rejectReason = ref('');
 const processing = ref(false);
 
 const handleSend = () => {
@@ -75,7 +80,6 @@ const handleAccept = () => {
     router.post(route('quotes.accept', props.quote.id), {}, { preserveScroll: true });
 };
 const handleConvert = () => {
-    if (!confirm('¿Convertir esta cotización en una venta? Se descontará el stock automáticamente.')) return;
     router.post(route('quotes.convert', props.quote.id), {}, { preserveScroll: true });
 };
 const handleDelete = () => {
@@ -88,9 +92,19 @@ const handleDelete = () => {
         },
     });
 };
+const openReject = () => {
+    rejectReason.value = '';
+    confirmRejectOpen.value = true;
+};
 const handleReject = () => {
-    const reason = prompt('Motivo de rechazo (opcional):') ?? '';
-    router.post(route('quotes.reject', props.quote.id), { reason }, { preserveScroll: true });
+    processing.value = true;
+    router.post(route('quotes.reject', props.quote.id), { reason: rejectReason.value }, {
+        preserveScroll: true,
+        onFinish: () => {
+            processing.value = false;
+            confirmRejectOpen.value = false;
+        },
+    });
 };
 const handlePrint = () => {
     window.print();
@@ -139,11 +153,11 @@ const handlePrint = () => {
                         <Check class="mr-1" />
                         Aceptar
                     </Button>
-                    <Button v-if="quote.status === 'sent'" variant="outline" class="text-destructive" @click="handleReject">
+                    <Button v-if="quote.status === 'sent'" variant="outline" class="text-destructive" @click="openReject">
                         <X class="mr-1" />
                         Rechazar
                     </Button>
-                    <Button v-if="quote.can_convert" @click="handleConvert">
+                    <Button v-if="quote.can_convert" @click="confirmConvertOpen = true">
                         <ShoppingCart class="mr-1" />
                         Convertir en venta
                     </Button>
@@ -315,5 +329,43 @@ const handlePrint = () => {
             :processing="processing"
             @confirm="handleDelete"
         />
+
+        <ConfirmDialog
+            v-model:open="confirmConvertOpen"
+            title="¿Convertir esta cotización en una venta?"
+            description="Se descontará el stock automáticamente. Esta acción no se puede deshacer."
+            confirm-label="Sí, convertir"
+            :processing="processing"
+            variant="default"
+            @confirm="handleConvert"
+        />
+
+        <Dialog v-model:open="confirmRejectOpen">
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Rechazar cotización</DialogTitle>
+                    <DialogDescription>Indica el motivo del rechazo (opcional).</DialogDescription>
+                </DialogHeader>
+                <div class="space-y-2">
+                    <Label for="reject-reason">Motivo</Label>
+                    <textarea
+                        id="reject-reason"
+                        v-model="rejectReason"
+                        rows="3"
+                        placeholder="Ej. Cliente no responde, precio fuera de presupuesto..."
+                        class="border-input bg-transparent ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[80px] w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                    />
+                </div>
+                <DialogFooter>
+                    <DialogClose as-child>
+                        <Button variant="outline" :disabled="processing">Cancelar</Button>
+                    </DialogClose>
+                    <Button variant="destructive" :disabled="processing" @click="handleReject">
+                        <Loader2 v-if="processing" class="mr-1 animate-spin" />
+                        Rechazar cotización
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     </AppLayout>
 </template>

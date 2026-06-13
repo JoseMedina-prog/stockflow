@@ -10,6 +10,7 @@ const props = defineProps<{
     confirmLabel?: string;
     cancelLabel?: string;
     processing?: boolean;
+    variant?: 'default' | 'destructive';
 }>();
 
 const emit = defineEmits<{
@@ -39,7 +40,7 @@ const handleCancel = () => {
                         {{ cancelLabel ?? 'Cancelar' }}
                     </Button>
                 </DialogClose>
-                <Button variant="destructive" :disabled="processing" @click="handleConfirm">
+                <Button :variant="variant === 'default' ? 'default' : 'destructive'" :disabled="processing" @click="handleConfirm">
                     <Loader2 v-if="processing" class="mr-1 animate-spin" />
                     {{ confirmLabel ?? 'Eliminar' }}
                 </Button>
